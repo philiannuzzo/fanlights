@@ -1,0 +1,76 @@
+html {
+	height: 100%;
+}
+
+body {
+	background: black;
+	height: 100%;
+}
+
+#initialContainer {
+	display: flex;
+	align-items: center;
+	height: 100%;
+}
+
+.initial {
+	color: gainsboro;
+	font-size: smaller;
+	text-align: center;
+	margin: auto;
+}
+
+#carouselContainer {
+	display: none;
+}
+
+.row {
+	margin-bottom: 10px;
+}
+
+.thumb-container {
+	margin-right: 10px;
+}
+
+.title-container {
+	background: #333;
+	cursor: pointer;
+}
+
+.title-container:hover {
+	background: #555;
+}
+
+.thumb {
+	cursor: pointer;
+	max-width: 100%;
+}
+
+.title {
+	color: gainsboro;
+	margin: 5px;
+	font-size: smaller;
+}
+
+.time {
+	color: gainsboro;
+	margin: 5px;
+	font-size: 11px;
+}
+
+.newer {
+	margin-right: 5px;
+}
+
+.info-container {
+	color: gainsboro;
+	font-size: 11px;
+}
+
+.new {
+	color: red;
+}
+
+.active {
+	border: solid 2px #2277ff;
+}

@@ -1,0 +1,36 @@
+{
+  "manifest_version": 2,
+
+  "name": "Highlights+",
+  "description": "Watch HD highlights of your team's big plays minutes after they happen. Track your team on Twitter, remove ads and clutter, and more.",
+  "version": "1.4.1",
+  "options_page": "options.html",
+  "web_accessible_resources": [
+	  "options.html",
+  	  "videoIcon.png"
+  ],
+  "permissions": [
+	"storage",
+	"http://baseball.fantasysports.yahoo.com/",
+	"http://*.mlb.com/",
+	"http://www.fangraphs.com/",
+	"http://fangraphs.com/",
+	"http://www.baseball-reference.com/"
+  ],
+  "background": {
+	"page": "background.html"
+  },
+  "page_action": {
+	"default_icon": { "19": "icon-19.png" }
+  },
+  "icons": {
+	  "48": "icon-48.png",
+	  "128": "icon-128.png"
+  },
+  "content_scripts": [
+    	{
+	  "matches": ["http://football.fantasysports.yahoo.com/f1/*", "https://football.fantasysports.yahoo.com/f1/*", "http://baseball.fantasysports.yahoo.com/b1/*", "https://baseball.fantasysports.yahoo.com/b1/*", "http://games.espn.go.com/*", "http://www.fantrax.com/fantasy/*", "https://www.fanduel.com/*", "https://www.draftkings.com/lineup", "https://www.draftkings.com/contest/*", "http://m.mlb.com/video/*"],
+	  "js": ["jquery-2.1.0.min.js", "helpers.js", "/platforms/yahoo.js", "/platforms/espn.js", "/platforms/fantrax.js", "/platforms/dailies.js", "content.js"]
+  	}
+  ]
+}

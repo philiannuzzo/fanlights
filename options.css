@@ -1,0 +1,21 @@
+html {
+	font-family: "Arial";
+}
+
+div {
+	margin: 10px;
+}
+
+img {
+	vertical-align: middle;
+}
+
+.top {
+	font-size: large;
+	margin: 0px;
+}
+
+.status {
+	height: 12px;
+	color: #222222;
+}

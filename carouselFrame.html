@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<link rel="stylesheet" href="bootstrap.min.css" crossorigin="anonymous" />
+		<link rel="stylesheet" href="carouselFrame.css" />
+	</head>
+	<body>
+		<div id="initialContainer">
+			<p class="initial">Click a <img src="videoIcon.png" /> to begin</p>
+		</div>
+		<div id="carouselContainer">
+			<div class="row no-gutters">
+				<div class="thumb-container col-4">
+					<img src class="thumb d-block rounded active" />
+				</div>
+				<div class="title-container rounded col">
+					<h1 class="title"></h1>
+					<p class="time"></p>
+				</div>
+			</div>
+			<div class="row no-gutters">
+				<div class="thumb-container col-4">
+					<img src class="thumb d-block rounded" />
+				</div>
+				<div class="title-container rounded col">
+					<h1 class="title"></h1>
+					<p class="time"></p>
+				</div>
+			</div>
+			<div class="row no-gutters">
+				<div class="thumb-container col-4">
+					<img src class="thumb d-block rounded" />
+				</div>
+				<div class="title-container rounded col">
+					<h1 class="title"></h1>
+					<p class="time"></p>
+				</div>
+			</div>
+			<div class="row no-gutters">
+				<div class="info-container col">
+					Created by
+					<a href="https://twitter.com/philiannuzzo" target="_blank"
+						>@philiannuzzo</a
+					>
+					<br />
+					View source at
+					<a href="http://fanlights.io" target="_blank">fanlights.io</a>
+				</div>
+				<div class="btn-container col-auto">
+					<button type="button" class="newer btn btn-primary btn-sm" disabled>
+						Newer
+					</button>
+					<button type="button" class="older btn btn-primary btn-sm">
+						Older
+					</button>
+				</div>
+			</div>
+		</div>
+		<script src="/libs/jquery-3.5.1.min.js"></script>
+		<script src="/libs/bootstrap.bundle.min.js"></script>
+		<script src="/libs/lodash.min.js"></script>
+		<script src="carouselFrame.js"></script>
+	</body>
+</html>

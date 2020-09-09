@@ -1,0 +1,61 @@
+#carousel {
+	border-radius: 5px 0px 0px;
+	position: fixed;
+	right: 20px;
+	background: black;
+	animation-name: insertCarousel;
+	animation-duration: 100ms;
+	bottom: -265px;
+	height: 265px;
+}
+
+#carouselFrame {
+	border: none;
+	height: 100%;
+	width: 330px;
+	margin: 10px;
+}
+
+#videoTab {
+	border-radius: 5px 5px 0px 0px;
+	position: absolute;
+	background: black;
+	right: 0px;
+	bottom: 100%;
+	cursor: pointer;
+}
+
+#fanlights {
+	margin: 5px 10px 0px 10px;
+}
+
+.videoIcon {
+	cursor: pointer;
+}
+
+@keyframes insertCarousel {
+	0% {
+		bottom: -340px;
+	}
+	100% {
+		bottom: -265px;
+	}
+}
+
+@keyframes enterCarousel {
+	0% {
+		bottom: -265px;
+	}
+	100% {
+		bottom: 0px;
+	}
+}
+
+@keyframes exitCarousel {
+	0% {
+		bottom: 0px;
+	}
+	100% {
+		bottom: -265px;
+	}
+}

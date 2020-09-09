@@ -1,0 +1,17 @@
+html{
+	font-family: "Arial";
+}
+div{
+	width: 700px;
+}
+div.top{
+	font-size: 17px;
+
+}
+div.options{
+	padding: 10px;
+	font-size: 12px;
+}
+img{
+	vertical-align: middle;
+}

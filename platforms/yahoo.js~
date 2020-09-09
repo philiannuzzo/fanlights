@@ -1,0 +1,468 @@
+function yahooAdvStats(bList, pList, batterstatids, pitcherstatids){
+	var batterids = new Array(); var batblanks = 0;
+	var month = 0; var year = new Date().getFullYear(); var season = year;
+//	var month = 0; var year = 2015; var season = year;
+	if 	( document.location.href.indexOf("stat2=D")>-1 ) month = 0; // Today
+	else if ( document.location.href.indexOf("stat2=L7")>-1 ) month = 1; // Last 7 days
+	else if ( document.location.href.indexOf("stat2=L14")>-1 ) month = 2; // Last 14 days
+	else if ( document.location.href.indexOf("stat2=L30")>-1 ) month = 3; // Last 30 days
+	else if ( document.location.href.indexOf("stat2=S_"+year)>-1 ) season = year; // This year
+	else if ( document.location.href.indexOf("stat2=S_"+(year-1))>-1 ) season = year-1; // Last year
+	else if ( document.location.href.indexOf("stat2=S_"+(year-2))>-1 ) season = year-2; // Two years ago
+	var batterurl = "http://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=all&qual=0&type=c,"+batterstatids.toString()+"&season="+season+"&month="+month+"&season1="+season+"&ind=0&team=0&rost=0&age=0&filter=&players=";
+	for ( var i=0 ; i<bList.length ; i++ ){
+		$.get( "http://www.fangraphs.com/quickplayersearch.aspx?name="+bList[i], function(data){
+			var batterQPS = document.createElement("div");
+			batterQPS.innerHTML = data;
+			var batterid = batterQPS.getElementsByTagName("a")[0].getAttribute("href").split("=")[1].split("&")[0];
+			if ( batterid.substring(0,2) != "sa" ){
+				batterids.push(batterid);
+				batterurl += batterid+",";
+			}
+			else{
+				batblanks++;
+			};
+			if ( batterids.length == (bList.length - batblanks) ){
+				batterurl = batterurl.slice(0, batterurl.length-1) + "&page=1_50"; // remove trailing comma
+				$.get( batterurl, function(data){
+					var batterLeaders = document.createElement("div");
+						batterLeaders.innerHTML = data;
+					batterLeadersTable = batterLeaders.getElementsByClassName("rgMasterTable")[0];
+					batterLeadersTable.setAttribute("style", "display: none");
+					document.getElementsByTagName("html")[0].appendChild(batterLeadersTable);
+					for ( var i=0 ; i<bList.length ; i++ ){
+						var batterRow = document.getElementById("LeaderBoard1_dg1_ctl00__"+i);
+						var batter = escape( batterRow.getElementsByTagName("a")[0].innerText.split(".").join("") );
+						for ( var j=0 ; j<batterstatids.length ; j++ ){
+							if ( document.getElementById( batter+" span"+(j+1) ) ){
+								document.getElementById( batter+" span"+(j+1) ).innerHTML = batterRow.getElementsByTagName("td")[j+3].innerText.replace(" ", "");
+								document.getElementById( batter+" span"+(j+1) ).removeAttribute("class");
+							};
+						};
+					};
+				});
+			};
+		});
+	};
+	var pitcherids = new Array(); var pitblanks = 0;
+	var pitcherurl = "http://www.fangraphs.com/leaders.aspx?pos=all&stats=pit&lg=all&qual=0&type=c,"+pitcherstatids.toString()+"&season="+season+"&month="+month+"&season1="+season+"&ind=0&team=0&rost=0&age=0&filter=&players=";
+	for ( var i=0 ; i<pList.length ; i++ ){
+		$.get( "http://www.fangraphs.com/quickplayersearch.aspx?name="+pList[i], function(data){
+			var pitcherQPS = document.createElement("div");
+			pitcherQPS.innerHTML = data;
+			var pitcherid = pitcherQPS.getElementsByTagName("a")[0].getAttribute("href").split("=")[1].split("&")[0];
+			if ( pitcherid.substring(0,2) != "sa" ){
+				pitcherids.push(pitcherid);
+				pitcherurl += pitcherid+",";
+			}
+			else{
+				pitblanks++;
+			};
+			if ( pitcherids.length == (pList.length - pitblanks) ){
+				pitcherurl = pitcherurl.slice(0, pitcherurl.length-1) + "&page=1_50"; // remove trailing comma
+				$.get( pitcherurl, function(data){
+					var pitcherLeaders = document.createElement("div");
+					pitcherLeaders.innerHTML = data;
+					pitcherLeadersTable = pitcherLeaders.getElementsByClassName("rgMasterTable")[0];
+					pitcherLeadersTable.setAttribute("style", "display: none");
+					document.getElementsByTagName("html")[0].insertBefore(pitcherLeadersTable, batterLeadersTable); // Pitcher table before batter table! Important!
+					for ( var i=0 ; i<pList.length ; i++ ){
+						var pitcherRow = document.getElementById("LeaderBoard1_dg1_ctl00__"+i);
+						var pitcher = escape( pitcherRow.getElementsByTagName("a")[0].innerText.split(".").join("") );
+						for ( var j=0 ; j<pitcherstatids.length ; j++ ){
+							if ( document.getElementById( pitcher+" span"+(j+1) ) ){
+								document.getElementById( pitcher+" span"+(j+1) ).innerHTML = pitcherRow.getElementsByTagName("td")[j+3].innerText.replace(" ", "");
+								document.getElementById( pitcher+" span"+(j+1) ).removeAttribute("class");
+							};
+						};
+					};
+				});
+			};
+		});
+	};
+}
+
+function yahooAdvPlayer(pList, isBat, playerstatids){
+	var playerids = new Array(); var blanks = 0;
+	if ( isBat )	var playerurl = "http://www.fangraphs.com/leaders.aspx?pos=all&stats=bat&lg=all&qual=0&type=c,"+playerstatids.toString()+"&season=2016&month=0&season1=2016&ind=0&team=0&rost=0&age=0&filter=&players=";
+	else		var playerurl = "http://www.fangraphs.com/leaders.aspx?pos=all&stats=pit&lg=all&qual=0&type=c,"+playerstatids.toString()+"&season=2016&month=0&season1=2016&ind=0&team=0&rost=0&age=0&filter=&players=";
+	for ( var i=0 ; i<pList.length ; i++ ){
+		$.get( "http://www.fangraphs.com/quickplayersearch.aspx?name="+pList[i], function(data){
+			var playerQPS = document.createElement("div");
+			playerQPS.innerHTML = data;
+			var playerid = playerQPS.getElementsByTagName("a")[0].getAttribute("href").split("=")[1].split("&")[0];
+			if ( playerid.substring(0,2) != "sa" ){
+				playerids.push(playerid);
+				playerurl += playerid+",";
+			}
+			else{
+				blanks++;
+			};
+			if ( playerids.length == (pList.length - blanks) ){
+				playerurl = playerurl.slice(0, playerurl.length-1) + "&page=1_50"; // remove trailing comma
+				$.get( playerurl, function(data){
+					var playerLeaders = document.createElement("div");
+					playerLeaders.innerHTML = data;
+					playerLeadersTable = playerLeaders.getElementsByClassName("rgMasterTable")[0];
+					playerLeadersTable.setAttribute("style", "display: none");
+					document.getElementsByTagName("html")[0].appendChild(playerLeadersTable);
+					for ( var i=0 ; i<pList.length ; i++ ){
+						var playerRow = document.getElementById("LeaderBoard1_dg1_ctl00__"+i);
+						var player = escape( playerRow.getElementsByTagName("a")[0].innerText.split(".").join("") );
+						for ( var j=0 ; j<playerstatids.length ; j++ ){
+							if ( document.getElementById( player+" span"+(j+1) ) ){
+								document.getElementById( player+" span"+(j+1) ).innerHTML = playerRow.getElementsByTagName("td")[j+3].innerText.replace(" ", "");
+								document.getElementById( player+" span"+(j+1) ).removeAttribute("class");
+							};
+						};
+					};
+				});
+			};
+		});
+	};
+}
+
+function yahoo(options){
+
+	var leagueid = document.location.pathname.split("/")[2];
+	console.log( "[Highlights+] League ID:", leagueid );
+	console.log( "[Highlights+] Remove DF ads:", options.removeDFads );
+	console.log( "[Highlights+] Show advanced stats:", options.advMetricsEnabled );
+
+// UI cleanup
+var yads = document.getElementsByClassName("yadslug"); // AdChoices litter
+while ( yads[0] ) yads[0].parentNode.removeChild(yads[0]);
+var blueArray = document.getElementsByClassName("ysf-player-video-link"); // Blue video icons
+while ( blueArray[0] ) blueArray[0].parentNode.removeChild(blueArray[0]);
+if ( options.removeDFads || options.removeDFads == undefined ){
+	var dfads = document.getElementsByClassName("df-ad"); // DF ads
+	while ( dfads[0] ) dfads[0].parentNode.removeChild(dfads[0]);
+};
+// Options
+document.getElementById("league-info").getElementsByTagName("span")[0].innerHTML += " | <a style='color:lightblue' title='Highlights+ Options' id='options_info'>Highlights+ v"+chrome.runtime.getManifest().version+"</a>";
+document.getElementById("options_info").addEventListener("click", function(){
+	var optionsWindow = window.open(chrome.extension.getURL("options.html"));
+});
+
+	/** To run on team page only (START) 
+	    (IF pathname ends in a digit AND starts with correct substring) OR contains 'team' **/
+	if ( ( /\d$/.test(document.location.pathname) && document.location.pathname.indexOf("/b1/"+leagueid+"/")==0 ) || document.location.pathname.indexOf("team")>-1 ){
+
+// Re-do filter buttons
+var navItems = document.getElementsByClassName("Subnav-main navlist")[0].getElementsByClassName("Navitem");
+for ( var i=0 ; i<navItems.length ; i++ ){
+	navItems[i].getElementsByTagName("a")[0].removeAttribute("class");
+	if ( navItems[i].getAttribute("class").indexOf("Selected") > -1 ) navItems[i].getElementsByTagName("a")[0].setAttribute("style", "padding: 5px 10px; font-weight: bold");
+	else navItems[i].getElementsByTagName("a")[0].setAttribute("style", "padding: 5px 10px");
+	navItems[i].parentNode.setAttribute("style", "padding: 5px 10px");
+};
+// Grab list of batters
+var batterAList = document.getElementById("statTable0-wrap").getElementsByClassName("Nowrap name");
+var batterList = new Array();
+for ( var i=0 ; i<batterAList.length ; i++ ){
+	batterList[i] = escape( stripVowelAccent( batterAList[i].innerHTML.split(".").join("") ) );
+};
+// Grab list of pitchers
+var pitcherAList = document.getElementById("statTable1-wrap").getElementsByClassName("Nowrap name");
+var pitcherList = new Array();
+for ( var i=0 ; i<pitcherAList.length ; i++ ){
+	pitcherList[i] = escape( stripVowelAccent( pitcherAList[i].innerHTML.split(".").join("") ) );
+};
+// Add video buttons to batters
+var batterNotes = document.getElementById("statTable0-wrap").getElementsByClassName("playernote");
+for ( var i=0 ; i<batterList.length ; i++ ){
+	batterNotes[i].insertAdjacentHTML("afterEnd", " <img class='videoIcon' id='"+batterList[i]+"' src='"+chrome.extension.getURL("videoIcon.png")+"'>");
+	document.getElementById(batterList[i]).addEventListener( "click", function(){
+		chrome.runtime.sendMessage({greeting: "videoPopup", playerName: this.id}, function(response) { // to background
+			console.log(response.farewell);
+		});
+	} );
+};
+// Add video buttons to pitchers
+var pitcherNotes = document.getElementById("statTable1-wrap").getElementsByClassName("playernote");
+for ( var i=0 ; i<pitcherList.length ; i++ ){
+	pitcherNotes[i].insertAdjacentHTML("afterEnd", " <img class='videoIcon' id='"+pitcherList[i]+"' src='"+chrome.extension.getURL("videoIcon.png")+"'>");
+	document.getElementById(pitcherList[i]).addEventListener( "click", function(){
+		chrome.runtime.sendMessage({greeting: "videoPopup", playerName: this.id}, function(response) { // to background
+			console.log(response.farewell);
+		});
+	} );
+};
+
+
+// My Team on Twitter
+/*
+if ( true ){
+	// Add button
+	btnfirst = document.getElementsByClassName("Btn Btn-short")[4];
+	btnfirst.insertAdjacentHTML("beforeBegin", "<a class='Btn Btn-short Mend-med' id='twitterBtn'>My Team on Twitter</a> ");
+	playerstring = "";
+	twitterurl = "";
+	document.getElementById("twitterBtn").addEventListener( "click", function(){
+		console.log("twitter btn clicked!");
+	});
+};
+*/
+
+
+// Advanced Stats
+if ( options.advMetricsEnabled ){
+	if ( options.batterheaders == undefined ) var batterheaders = ["BABIP", "ISO", "BB%"];
+	else var batterheaders = options.batterheaders;
+	if ( options.pitcherheaders == undefined ) var pitcherheaders = ["FIP", "xFIP", "tERA"];
+	else var pitcherheaders = options.pitcherheaders;
+	// Fan pts league or not?
+	var teamCardFanPts = document.getElementsByClassName("team-card-stats")[0].getElementsByTagName("em")[1];
+	if ( teamCardFanPts && teamCardFanPts.innerText == "Total Points" ) var isFanPts = true;
+	else var isFanPts = false;
+	var headerRow1 = document.getElementById("statTable0-wrap").getElementsByTagName("tr")[1];
+	var headerRow2 = document.getElementById("statTable1-wrap").getElementsByTagName("tr")[1];
+	// Add "Advanced" header (batters)
+	var topthlist = document.getElementById("statTable0").getElementsByClassName("First")[0].getElementsByTagName("th");
+	if ( isFanPts ) var topthlast = topthlist[topthlist.length-2];
+	else		var topthlast = topthlist[topthlist.length-1];
+	topthlast.setAttribute("colspan", batterheaders.length);
+	topthlast.removeChild(topthlast.getElementsByTagName("div")[0]);
+	topthlast.insertAdjacentHTML("afterBegin", "<span>Advanced</span>&nbsp;(<a title='What is this?' id='options_highlights_batters'>?</a>)");
+	document.getElementById("options_highlights_batters").addEventListener("click", function(){
+		var optionsWindow = window.open(chrome.extension.getURL("options.html"));
+	});
+	// Add "Advanced" header (pitchers)
+	var topthlist = document.getElementById("statTable1").getElementsByClassName("First")[0].getElementsByTagName("th");
+	if ( isFanPts ) var topthlast = topthlist[topthlist.length-2];
+	else		var topthlast = topthlist[topthlist.length-1];
+	topthlast.setAttribute("colspan", pitcherheaders.length);
+	topthlast.removeChild(topthlast.getElementsByTagName("div")[0]);
+	topthlast.insertAdjacentHTML("afterBegin", "<span>Advanced</span>&nbsp;(<a title='What is this?' id='options_highlights_pitchers'>?</a>)");
+	document.getElementById("options_highlights_pitchers").addEventListener("click", function(){
+		var optionsWindow = window.open(chrome.extension.getURL("options.html"));
+	});
+	// Add table headers (batters)
+	var thlist = headerRow1.getElementsByTagName("th");
+	if ( isFanPts ) var thlast = thlist[thlist.length-3];
+	else		var thlast = thlist[thlist.length-2];
+	var newheaders = "";
+	for ( var i=0 ; i<batterheaders.length ; i++ ){
+		newheaders += "<th class='Ta-end'><div>"+batterheaders[i]+"</div></th>";
+	};
+	thlast.insertAdjacentHTML("afterEnd", newheaders);
+	// Add table headers (pitchers)
+	var thlist = headerRow2.getElementsByTagName("th");
+	if ( isFanPts ) var thlast = thlist[thlist.length-3];
+	else		var thlast = thlist[thlist.length-2];
+	var newheaders = "";
+	for ( var i=0 ; i<pitcherheaders.length ; i++ ){
+		newheaders += "<th class='Ta-end'><div>"+pitcherheaders[i]+"</div></th>";
+	};
+	thlast.insertAdjacentHTML("afterEnd", newheaders);
+	// Add table cells (batters)
+	var trlist = document.getElementById("statTable0-wrap").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+	var p=0;
+	for ( var i=0 ; i<trlist.length ; i++ ){
+		var tdlist = document.getElementById("statTable0-wrap").getElementsByTagName("tr")[i+2].getElementsByTagName("td");
+		if ( isFanPts ) var tdlast = tdlist[tdlist.length-3];
+		else		var tdlast = tdlist[tdlist.length-2];
+		var newcells = "";
+		if ( trlist[i].getElementsByClassName("Nowrap name")[0] ){
+			for ( var j=0 ; j<batterheaders.length ; j++ ){
+				newcells += "<td class='Ta-end'><div><span class='F-faded2' id='"+batterList[p]+" span"+(j+1)+"'>-</span></div></td>";
+			};
+			tdlast.insertAdjacentHTML("afterEnd", newcells);
+			p++;
+		}
+		else{
+			for ( var j=0 ; j<batterheaders.length ; j++ ){
+				newcells += "<td class='Ta-end'><div><span class='F-faded2'>-</span></div></td>";
+			};
+			tdlast.insertAdjacentHTML("afterEnd", newcells);
+		};
+	};
+	// Add table cells (pitchers)
+	var trlist = document.getElementById("statTable1-wrap").getElementsByTagName("tbody")[0].getElementsByTagName("tr");
+	var p=0;
+	for ( var i=0 ; i<trlist.length ; i++ ){
+		var tdlist = document.getElementById("statTable1-wrap").getElementsByTagName("tr")[i+2].getElementsByTagName("td");
+		if ( isFanPts )	var tdlast = tdlist[tdlist.length-3];
+		else		var tdlast = tdlist[tdlist.length-2];
+		var newcells = "";
+		if ( trlist[i].getElementsByClassName("Nowrap name")[0] ){
+			for ( var j=0 ; j<pitcherheaders.length ; j++ ){
+				newcells += "<td class='Ta-end'><div><span class='F-faded2' id='"+pitcherList[p]+" span"+(j+1)+"'>-</span></div></td>";
+			};
+			tdlast.insertAdjacentHTML("afterEnd", newcells);
+			p++;
+		}
+		else{
+			for ( var j=0 ; j<pitcherheaders.length ; j++ ){
+				newcells += "<td class='Ta-end'><div><span class='F-faded2'>-</span></div></td>";
+			};
+			tdlast.insertAdjacentHTML("afterEnd", newcells);
+		};
+	};
+	// Add retrieve button
+	if ( options.batterstatids == undefined ) var batterstatids = ["bat_41", "bat_40", "bat_34"];
+	else var batterstatids = options.batterstatids;
+	if ( options.pitcherstatids == undefined ) var pitcherstatids = ["pit_45", "pit_62", "pit_61"];
+	else var pitcherstatids = options.pitcherstatids;
+	for ( var i=0 ; i<batterstatids.length ; i++ ){
+		batterstatids[i] = batterstatids[i].substring(4);
+	};
+	for ( var i=0 ; i<pitcherstatids.length ; i++ ){
+		pitcherstatids[i] = pitcherstatids[i].substring(4);
+	};
+	btnfirst = document.getElementsByClassName("Btn Btn-short")[2];
+	btnfirst.insertAdjacentHTML("beforeBegin", "<a class='Btn Btn-short Mend-med' id='retrieveBtn'>Retrieve Advanced Stats</a> ");
+	document.getElementById("retrieveBtn").addEventListener( "click", function(){ yahooAdvStats(batterList, pitcherList, batterstatids, pitcherstatids) } );
+};
+
+	}
+	/** To run on team page only (END) **/
+
+	/** To run on players page only (START) **/
+	else if ( document.location.pathname == "/b1/"+leagueid+"/players" || document.location.pathname == "/b1/"+leagueid+"/research" || document.location.pathname == "/b1/"+leagueid+"/keystosuccess" ){
+
+// Grab list of players
+var playerAList = document.getElementsByClassName("Nowrap name");
+var playerList = new Array();
+for ( var i=0 ; i<playerAList.length ; i++ ){
+	playerList[i] = escape( stripVowelAccent(playerAList[i].innerText.split(".").join("")) );
+};
+// Add video buttons
+var playerNotes = document.getElementsByClassName("playernote");
+for ( var i=0 ; i<playerList.length ; i++ ){
+	playerNotes[i].insertAdjacentHTML("afterEnd", " <img class='videoIcon' id='"+playerList[i]+"' src='"+chrome.extension.getURL("videoIcon.png")+"'>");
+	document.getElementById(playerList[i]).addEventListener("click", function(){
+		chrome.runtime.sendMessage({greeting: "videoPopup", playerName: this.id}, function(response) { // to background
+			console.log(response.farewell);
+		});
+	});
+};
+
+if ( options.advMetricsEnabled ){
+	if ( options.batterheaders == undefined ) var batterheaders = ["BABIP", "ISO", "BB%"];
+	else var batterheaders = options.batterheaders;
+	if ( options.pitcherheaders == undefined ) var pitcherheaders = ["FIP", "xFIP", "tERA"];
+	else var pitcherheaders = options.pitcherheaders;
+	// Fan pts league or not?
+	var lastlist = document.getElementsByTagName("thead")[0].getElementsByClassName("Last");
+	if ( lastlist[lastlist.length-1].innerText == "Fan Pts\n" ) var isFanPts = true;
+	else var isFanPts = false;
+	// Batters or pitchers?
+	var isBatters = document.getElementsByClassName("Table")[0].getElementsByTagName("tr")[1].getElementsByTagName("th")[1].innerText == "Batters\n";
+	// Add table headers
+	var thlist = document.getElementsByTagName("thead")[0].getElementsByTagName("tr")[1].getElementsByTagName("th");
+	if ( isFanPts ) var thlast = thlist[thlist.length-3];
+	else		var thlast = thlist[thlist.length-2];
+	var newheaders = "";
+	if ( isBatters ){
+		var playerheaders = batterheaders;
+		for ( var i=0 ; i<playerheaders.length ; i++ ){
+			newheaders += "<th class='Ta-end'><div>"+batterheaders[i]+"</div></th>";
+		};
+		thlast.insertAdjacentHTML("afterEnd", newheaders);
+	}
+	else{
+		var playerheaders = pitcherheaders;
+		for ( var i=0 ; i<playerheaders.length ; i++ ){
+			newheaders += "<th class='Ta-end'><div>"+pitcherheaders[i]+"</div></th>";
+		};
+		thlast.insertAdjacentHTML("afterEnd", newheaders);
+	};
+	// Add "Advanced" header
+	var topthlist = document.getElementsByTagName("thead")[0].getElementsByTagName("tr")[0].getElementsByTagName("th");
+	if ( isFanPts ) var topthlast = topthlist[topthlist.length-2];
+	else		var topthlast = topthlist[topthlist.length-1];
+	topthlast.setAttribute("colspan", playerheaders.length);
+	topthlast.removeChild(topthlast.getElementsByTagName("div")[0]);
+	topthlast.insertAdjacentHTML("afterBegin", "<span>Advanced</span>&nbsp;(<a title='What is this?' id='options_highlights'>?</a>)");
+	document.getElementById("options_highlights").addEventListener("click", function(){
+		var optionsWindow = window.open(chrome.extension.getURL("options.html"));
+	});
+	// Add table cells
+	for ( var i=0 ; i<playerList.length ; i++ ){
+		var tdlist = document.getElementsByClassName("Table")[0].getElementsByTagName("tbody")[0].getElementsByTagName("tr")[i].getElementsByTagName("td");
+		if ( isFanPts ) var tdlast = tdlist[tdlist.length-3];
+		else		var tdlast = tdlist[tdlist.length-2];
+		var newcells = "";
+		for ( var j=0 ; j<playerheaders.length ; j++ ){
+			newcells += "<td class='Ta-end'><span class='F-faded2' id='"+playerList[i]+" span"+(j+1)+"'>-</span></td>";
+		};
+		tdlast.insertAdjacentHTML("afterEnd", newcells);
+	};
+	// Add retrieve button
+	if ( isBatters ){
+		if ( options.batterstatids == undefined ) var playerstatids = ["bat_41", "bat_40", "bat_34"];
+		else var playerstatids = options.batterstatids;
+	}
+	else{
+		if ( options.pitcherstatids == undefined ) var playerstatids = ["pit_45", "pit_62", "pit_61"];
+		else var playerstatids = options.pitcherstatids;
+	};
+	for ( var i=0 ; i<playerstatids.length ; i++ ){
+		playerstatids[i] = playerstatids[i].substring(4);
+	};
+//	document.getElementById("iconlegend").parentNode.insertAdjacentHTML("beforeBegin", "<div class='Grid-u Fl-end' style='padding-left: 25px'><a id='retrieveBtn' href='#'>Retrieve Advanced Stats</a></div>");
+	var projectionspowered = document.getElementById("pagenav0").parentNode.parentNode.getElementsByClassName("Fl-end")[0];
+//	projectionspowered.innerHTML += " | <span class='F-shade Fz-xxs'><a id='retrieveBtn' href='#'>Retrieve Advanced Stats</a></span>";
+	projectionspowered.insertAdjacentHTML("beforeend", " | <span class='F-shade Fz-xxs'><a id='retrieveBtn' href='#'>Retrieve Advanced Stats</a></span>");
+	document.getElementById("retrieveBtn").addEventListener("click", function(){
+		yahooAdvPlayer(playerList, isBatters, playerstatids);
+	});
+};
+
+	}
+	/** To run on players page only (END) **/
+
+	/** To run on matchup page only (START) **/
+	else if ( document.location.pathname == "/b1/"+leagueid+"/matchup" ){
+
+// Grab list of players
+var playerDivList = [].slice.call( document.getElementsByClassName("ysf-player-name") );
+var playerList = new Array();
+for ( var i=0 ; i<playerDivList.length ; i++ ){
+	if ( playerDivList[i].getElementsByTagName("a")[0] ){
+		playerList[i] = escape( stripVowelAccent(playerDivList[i].getElementsByTagName("a")[0].innerHTML) );
+		playerList[i] = playerList[i].split("%20")[1];
+	};
+};
+for ( var i=0 ; i<playerList.length ; i++ ){ // remove 'undefined' (empties)
+	if ( playerList[i] == undefined ) playerList.splice(i, 1);
+};
+// Add video buttons
+var playerNotes = document.getElementsByClassName("playernote");
+for ( var i=0 ; i<playerList.length ; i++ ){
+	playerNotes[i].insertAdjacentHTML("afterEnd", " <img class='videoIcon' id='"+playerList[i]+"' src='"+chrome.extension.getURL("videoIcon.png")+"'>");
+	document.getElementById(playerList[i]).addEventListener("click", function(){
+		chrome.runtime.sendMessage({greeting: "videoPopup", playerName: this.id}, function(response) { // to background
+			console.log(response.farewell);
+		});
+	});
+};
+
+	}
+	/** To run on matchup page only (END) **/
+
+	/** To run on league home page only (START) **/
+	else if ( document.location.pathname == "/b1/"+leagueid ){
+
+// Grab list of players
+var playerPosList = document.getElementsByClassName("F-position");
+var playerList = new Array();
+for ( var i=0 ; i<playerPosList.length ; i++ ){
+	playerList[i] = playerPosList[i].parentNode.getElementsByTagName("a")[0].innerText;
+	playerList[i] = escape( stripVowelAccent(playerList[i]) );
+};
+// Add video buttons
+for ( var i=0 ; i<playerPosList.length ; i++ ){
+	playerPosList[i].parentNode.getElementsByTagName("a")[1].insertAdjacentHTML("afterEnd", " <img class='videoIcon' id='"+playerList[i]+"' src='"+chrome.extension.getURL("videoIcon.png")+"'>");
+	document.getElementById(playerList[i]).addEventListener("click", function(){
+		chrome.runtime.sendMessage({greeting: "videoPopup", playerName: this.id}, function(response) { // to background
+			console.log(response.farewell);
+		});
+	});
+};
+
+	};
+	/** To run on league home page only (END) **/
+
+}
