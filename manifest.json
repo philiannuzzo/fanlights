@@ -3,7 +3,7 @@
 
 	"name": "fanlights.io",
 	"description": "High-quality MLB video highlights added to Yahoo Fantasy Baseball",
-	"version": "2.0.1",
+	"version": "2.1.0",
 	"options_page": "options.html",
 	"web_accessible_resources": [
 		"options.html",

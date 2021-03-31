@@ -18,7 +18,7 @@ formatTime = (timestamp) => {
 		: formatted;
 };
 
-formatTitle = (title) => title.substring(0, 50);
+formatTitle = (title) => title.substring(0, 55);
 
 handleClick = (url, id) => {
 	chrome.runtime.sendMessage({ greeting: "playHighlight", url });
@@ -78,7 +78,7 @@ hydrate = (request) => {
 		});
 };
 
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
 	if (request.greeting === "populateCarousel") {
 		page = 0;
 		hydrate(request);
