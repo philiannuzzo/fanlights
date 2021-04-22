@@ -2,9 +2,11 @@
 	"manifest_version": 2,
 
 	"name": "fanlights.io",
-	"description": "High-quality MLB video highlights added to Yahoo Fantasy Baseball",
+	"description": "Adds the latest high-bitrate MLB video content to Yahoo Fantasy Baseball.",
 	"version": "2.1.1",
-	"options_page": "options.html",
+	"options_ui": {
+		"page": "options.html"
+	},
 	"web_accessible_resources": [
 		"options.html",
 		"videoIcon.png",

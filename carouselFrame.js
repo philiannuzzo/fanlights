@@ -78,13 +78,16 @@ hydrate = (request) => {
 		});
 };
 
-chrome.runtime.onMessage.addListener((request, _sender, sendResponse) => {
-	if (request.greeting === "populateCarousel") {
-		page = 0;
-		hydrate(request);
-		$("#initialContainer").css("display", "none");
-		$("#carouselContainer").css("display", "block");
-		reset();
-		sendResponse({ farewell: "isPopulated" });
-	}
-});
+populateCarousel = (request) => {
+	page = 0;
+	hydrate(request);
+	$("#initialContainer").css("display", "none");
+	$("#carouselContainer").css("display", "block");
+	reset();
+	chrome.runtime.sendMessage({ greeting: "isPopulated" });
+};
+
+chrome.runtime.onMessage.addListener(
+	(request, _sender, _sendResponse) =>
+		request.greeting === "populateCarousel" && populateCarousel(request)
+);

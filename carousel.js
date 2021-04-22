@@ -14,8 +14,10 @@ enterCarousel = () =>
 		bottom: "0px",
 	});
 
-toggleCarousel = () =>
-	getAnimationName() === "enterCarousel" ? exitCarousel() : enterCarousel();
+toggleCarousel = () => {
+	if (getAnimationName() === "enterCarousel") exitCarousel();
+	else enterCarousel();
+};
 
 insertCarousel = async () => {
 	await $.get(chrome.runtime.getURL("carousel.html"), (data) =>
@@ -26,10 +28,7 @@ insertCarousel = async () => {
 	$("#carouselFrame").attr("src", carouselFrameUrl);
 };
 
-populateCarousel = (docs) => {
-	chrome.runtime.sendMessage({ greeting: "playHighlight", url: docs[0].url });
-	chrome.runtime.sendMessage(
-		{ greeting: "populateCarousel", docs: docs },
-		({ farewell }) => farewell === "isPopulated" && enterCarousel()
-	);
-};
+chrome.runtime.onMessage.addListener(
+	(request, _sender, _sendResponse) =>
+		request.greeting === "enterCarousel" && enterCarousel()
+);

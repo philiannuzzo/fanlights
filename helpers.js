@@ -1,6 +1,4 @@
-const lookupBase = "https://typeahead.mlb.com/api/v1/typeahead/suggestions/";
-const searchBase =
-	"https://www.mlb.com/data-service/en/search?tags.slug=playerid-";
+videoIcon = (id, src) => ` <img class="fl-video-icon" id=${id} src=${src} />`;
 
 formatName = (name) => {
 	var rExps = [
@@ -22,14 +20,16 @@ formatName = (name) => {
 	return escape(name);
 };
 
-insertVideoIcons = (selector, playerNames, videoIconUrl) => {
-	$(selector).after(
-		(i) => ` <img class="videoIcon" src=${videoIconUrl} id=${playerNames[i]} />`
-	);
-	$(".videoIcon").click(async function () {
-		if (getAnimationName() === "enterCarousel") exitCarousel();
-		const { players } = await $.get(lookupBase + this.id);
-		const { docs } = await $.get(searchBase + players[0].playerId);
-		populateCarousel(docs);
+handleClick = async (e) => {
+	e.stopPropagation();
+	if (getAnimationName() === "enterCarousel") exitCarousel();
+	chrome.runtime.sendMessage({
+		greeting: "initiateCarousel",
+		playerName: e.target.id,
 	});
+};
+
+insertVideoIcons = (selector, playerNames, videoIconUrl) => {
+	$(selector).after((i) => videoIcon(playerNames[i], videoIconUrl));
+	$(".fl-video-icon").click(handleClick);
 };

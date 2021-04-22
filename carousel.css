@@ -29,8 +29,10 @@
 	margin: 5px 10px 0px 10px;
 }
 
-.videoIcon {
+.fl-video-icon {
 	cursor: pointer;
+	display: inline-block;
+	position: relative;
 }
 
 @keyframes insertCarousel {
