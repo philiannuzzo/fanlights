@@ -11,3 +11,7 @@ https://chrome.google.com/webstore/detail/fanlightsio/ndeobkgdldlmalcpkldhdadlhn
 ## Edge
 
 https://microsoftedge.microsoft.com/addons/detail/fanlightsio/ljcfdaefhcecnelgcamnbcjfmjedingd
+
+## Firefox
+
+https://addons.mozilla.org/en-US/firefox/addon/fanlights-io/
