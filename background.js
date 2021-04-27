@@ -4,9 +4,6 @@ const lookupBase = "https://typeahead.mlb.com/api/v1/typeahead/suggestions/";
 const searchBase =
 	"https://www.mlb.com/data-service/en/search?tags.slug=playerid-";
 
-const leftPos = screen.width / 2 - 620;
-const topPos = screen.height / 2 - 360;
-
 let popupId;
 
 popupData = (url) => ({
@@ -14,8 +11,8 @@ popupData = (url) => ({
 	type: "popup",
 	height: 726,
 	width: 1240,
-	left: leftPos,
-	top: topPos,
+	left: screen.width / 2 - 620,
+	top: screen.height / 2 - 363,
 });
 
 createPopup = (url) =>
