@@ -9,7 +9,6 @@
 	},
 	"web_accessible_resources": [
 		"options.html",
-		"videoIcon.png",
 		"carousel.html",
 		"carouselFrame.html",
 		"/icons/*"
