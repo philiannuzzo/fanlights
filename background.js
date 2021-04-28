@@ -18,7 +18,10 @@ popupData = (url, left = leftDefault, top = topDefault) => ({
 });
 
 createPopup = (url, left, top) =>
-	windows.create(popupData(url, left, top), (popup) => (popupId = popup.id));
+	windows.create(popupData(url, left, top), (popup) => {
+		popupId = popup.id;
+		windows.update(popupId, { left, top }); // firefox bug 1271047
+	});
 
 replacePopup = (popupId, url) =>
 	windows.get(popupId, (details) => {
