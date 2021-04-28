@@ -6,4 +6,17 @@ const videoIconUrl = chrome.runtime.getURL("/icons/video-icon.png");
 
 chrome.runtime.sendMessage({ greeting: "showPageIcon" });
 
-if (hostname === "baseball.fantasysports.yahoo.com") yahoo();
+switch (hostname) {
+	case "baseball.fantasysports.yahoo.com":
+		yahoo();
+		break;
+	case "mlb-cuts-diamond.mlb.com":
+	case "bdata-producedclips.mlb.com":
+		addEventListener("beforeunload", () =>
+			chrome.runtime.sendMessage({
+				greeting: "popupRemoved",
+				left: screenLeft,
+				top: screenTop,
+			})
+		);
+}

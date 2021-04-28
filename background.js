@@ -4,30 +4,32 @@ const lookupBase = "https://typeahead.mlb.com/api/v1/typeahead/suggestions/";
 const searchBase =
 	"https://www.mlb.com/data-service/en/search?tags.slug=playerid-";
 
+let leftDefault = screen.width / 2 - 620;
+let topDefault = screen.height / 2 - 363;
 let popupId;
 
-popupData = (url) => ({
+popupData = (url, left = leftDefault, top = topDefault) => ({
 	url,
 	type: "popup",
 	height: 726,
 	width: 1240,
-	left: screen.width / 2 - 620,
-	top: screen.height / 2 - 363,
+	left,
+	top,
 });
 
-createPopup = (url) =>
-	windows.create(popupData(url), (popup) => (popupId = popup.id));
+createPopup = (url, left, top) =>
+	windows.create(popupData(url, left, top), (popup) => (popupId = popup.id));
 
 replacePopup = (popupId, url) =>
-	windows.remove(popupId, () => {
-		createPopup(url);
-		if (runtime.lastError) return;
+	windows.get(popupId, (details) => {
+		if (runtime.lastError) return createPopup(url);
+		windows.remove(popupId, () => createPopup(url, details.left, details.top));
 	});
 
 playHighlight = (url) => {
 	storage.sync.get(null, ({ highBitrate }) => {
 		if (highBitrate) url = url.replace("4000K", "16000K");
-		!popupId ? createPopup(url) : replacePopup(popupId, url);
+		popupId ? replacePopup(popupId, url) : createPopup(url);
 	});
 };
 
@@ -53,20 +55,26 @@ runtime.onInstalled.addListener(
 	({ reason }) => reason === "install" && tabs.create({ url: "options.html" })
 );
 
-runtime.onMessage.addListener(({ greeting, url, playerName }, sender) => {
-	const tabId = sender.tab.id;
+runtime.onMessage.addListener(
+	({ greeting, url, playerName, left, top }, sender) => {
+		const tabId = sender.tab.id;
 
-	switch (greeting) {
-		case "showPageIcon":
-			pageAction.show(tabId);
-			break;
-		case "playHighlight":
-			playHighlight(url);
-			break;
-		case "initiateCarousel":
-			initiateCarousel(playerName, tabId);
-			break;
-		case "isPopulated":
-			tabs.sendMessage(tabId, { greeting: "enterCarousel" });
+		switch (greeting) {
+			case "showPageIcon":
+				pageAction.show(tabId);
+				break;
+			case "playHighlight":
+				playHighlight(url);
+				break;
+			case "initiateCarousel":
+				initiateCarousel(playerName, tabId);
+				break;
+			case "isPopulated":
+				tabs.sendMessage(tabId, { greeting: "enterCarousel" });
+				break;
+			case "popupRemoved":
+				leftDefault = left;
+				topDefault = top;
+		}
 	}
-});
+);

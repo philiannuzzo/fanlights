@@ -28,7 +28,9 @@
 		{
 			"matches": [
 				"https://baseball.fantasysports.yahoo.com/b1/*",
-				"http://baseball.fantasysports.yahoo.com/b1/*"
+				"http://baseball.fantasysports.yahoo.com/b1/*",
+				"https://mlb-cuts-diamond.mlb.com/FORGE/*",
+				"https://bdata-producedclips.mlb.com/*"
 			],
 			"js": [
 				"/libs/jquery-3.5.1.min.js",
