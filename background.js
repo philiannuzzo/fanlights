@@ -8,14 +8,17 @@ let leftDefault = screen.width / 2 - 620;
 let topDefault = screen.height / 2 - 363;
 let popupId;
 
-popupData = (url, left = leftDefault, top = topDefault) => ({
-	url,
-	type: "popup",
-	height: 726,
-	width: 1240,
-	left,
-	top,
-});
+popupData = (url, left = leftDefault, top = topDefault) => {
+	let obj = {
+		url,
+		type: "popup",
+		height: 726,
+		width: 1240,
+		left,
+		top,
+	};
+	return obj;
+};
 
 createPopup = (url, left, top) =>
 	windows.create(popupData(url, left, top), (popup) => {
@@ -25,16 +28,15 @@ createPopup = (url, left, top) =>
 
 replacePopup = (popupId, url) =>
 	windows.get(popupId, (details) => {
-		if (runtime.lastError) return createPopup(url);
+		if (runtime.lastError) return createPopup(url, leftDefault, topDefault);
 		windows.remove(popupId, () => createPopup(url, details.left, details.top));
 	});
 
-playHighlight = (url) => {
+playHighlight = (url) =>
 	storage.sync.get(null, ({ highBitrate }) => {
 		if (highBitrate) url = url.replace("4000K", "16000K");
 		popupId ? replacePopup(popupId, url) : createPopup(url);
 	});
-};
 
 initiateCarousel = async (playerName, tabId) => {
 	try {
