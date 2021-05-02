@@ -7,18 +7,16 @@ const searchBase =
 let leftDefault = screen.width / 2 - 620;
 let topDefault = screen.height / 2 - 363;
 let popupId;
+let popupTabId;
 
-popupData = (url, left = leftDefault, top = topDefault) => {
-	let obj = {
-		url,
-		type: "popup",
-		height: 726,
-		width: 1240,
-		left,
-		top,
-	};
-	return obj;
-};
+popupData = (url, left = leftDefault, top = topDefault) => ({
+	url,
+	type: "popup",
+	height: 726,
+	width: 1240,
+	left,
+	top,
+});
 
 createPopup = (url, left, top) =>
 	windows.create(popupData(url, left, top), (popup) => {
@@ -26,16 +24,16 @@ createPopup = (url, left, top) =>
 		windows.update(popupId, { left, top }); // firefox bug 1271047
 	});
 
-replacePopup = (popupId, url) =>
-	windows.get(popupId, (details) => {
+updatePopup = (popupId, url) =>
+	windows.update(popupId, { focused: true }, () => {
 		if (runtime.lastError) return createPopup(url, leftDefault, topDefault);
-		windows.remove(popupId, () => createPopup(url, details.left, details.top));
+		tabs.sendMessage(popupTabId, { greeting: "updatePopup", url });
 	});
 
 playHighlight = (url) =>
 	storage.sync.get(null, ({ highBitrate }) => {
 		if (highBitrate) url = url.replace("4000K", "16000K");
-		popupId ? replacePopup(popupId, url) : createPopup(url);
+		popupId ? updatePopup(popupId, url) : createPopup(url);
 	});
 
 initiateCarousel = async (playerName, tabId) => {
@@ -76,6 +74,9 @@ runtime.onMessage.addListener(
 				break;
 			case "isPopulated":
 				tabs.sendMessage(tabId, { greeting: "enterCarousel" });
+				break;
+			case "popupReady":
+				popupTabId = tabId;
 				break;
 			case "popupRemoved":
 				leftDefault = left;
