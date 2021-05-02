@@ -20,7 +20,7 @@ formatName = (name) => {
 	return escape(name);
 };
 
-handleClick = async (e) => {
+handleClick = (e) => {
 	e.stopPropagation();
 	if (getAnimationName() === "enterCarousel") exitCarousel();
 	chrome.runtime.sendMessage({
