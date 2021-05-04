@@ -12,6 +12,7 @@ function yahoo() {
 		"playerchanges",
 		"statcorrections",
 		"research",
+		"buzzindex",
 		"whoshot",
 		"keystosuccess",
 		"assistantmanager",
@@ -34,18 +35,29 @@ function yahoo() {
 			playerNames.push(formatName($(this).text()));
 		});
 
-	if (isTeam || endPoint === "players") removeHlCol();
+	initMutationObserver = () => {
+		const targetNode = document
+			.getElementsByClassName("fl-video-icon")[0]
+			.closest("section");
+		const observer = new MutationObserver((mutations) => {
+			playerNames = [];
+			render();
+		});
+		observer.observe(targetNode, { childList: true });
+	};
 
-	if (isTeam) {
-		$("#statnav a").removeClass();
-		$("#statsubnav a").removeClass().parent().css("padding", "5px 10px");
-		populatePlayerNames(".name");
-	} else if (endPoints.includes(endPoint)) {
-		populatePlayerNames(".name");
-	} else if (pathname === `/b1/${leagueId}` || endPoint === "transactions") {
-		populatePlayerNames(".Tst-transaction-table .Pbot-xs a:not(.playernote)");
-	} else return;
+	render = () => {
+		if (isTeam || endPoint === "players") {
+			removeHlCol();
+			populatePlayerNames(".name");
+			insertVideoIcons(".playernote:not(.small)", playerNames, videoIconUrl);
+		} else if (endPoints.includes(endPoint)) {
+			populatePlayerNames(".name");
+			insertVideoIcons(".playernote:not(.small)", playerNames, videoIconUrl);
+		}
+	};
 
-	insertVideoIcons(".playernote:not(.small)", playerNames, videoIconUrl);
+	render();
 	insertCarousel();
+	if (isTeam || endPoint === "players") initMutationObserver();
 }
