@@ -39,7 +39,7 @@ function yahoo() {
 		const targetNode = document
 			.getElementsByClassName("fl-video-icon")[0]
 			.closest("section");
-		const observer = new MutationObserver((mutations) => {
+		const observer = new MutationObserver(() => {
 			playerNames = [];
 			render();
 		});
@@ -47,11 +47,8 @@ function yahoo() {
 	};
 
 	render = () => {
-		if (isTeam || endPoint === "players") {
-			removeHlCol();
-			populatePlayerNames(".name");
-			insertVideoIcons(".playernote:not(.small)", playerNames, videoIconUrl);
-		} else if (endPoints.includes(endPoint)) {
+		if (isTeam || endPoints.includes(endPoint)) {
+			if (isTeam || endPoint === "players") removeHlCol();
 			populatePlayerNames(".name");
 			insertVideoIcons(".playernote:not(.small)", playerNames, videoIconUrl);
 		}
@@ -59,5 +56,5 @@ function yahoo() {
 
 	render();
 	insertCarousel();
-	if (isTeam || endPoint === "players") initMutationObserver();
+	return (isTeam || endPoint === "players") && initMutationObserver();
 }
