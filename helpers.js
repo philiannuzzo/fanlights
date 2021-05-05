@@ -1,4 +1,5 @@
-videoIcon = (id, src) => ` <img class="fl-video-icon" id=${id} src=${src} />`;
+videoIcon = (id) =>
+	` <img class="fl-video-icon" id=${id} src=${videoIconUrl} />`;
 
 formatName = (name) => {
 	var rExps = [
@@ -29,7 +30,7 @@ handleClick = (e) => {
 	});
 };
 
-insertVideoIcons = (selector, playerNames, videoIconUrl) => {
-	$(selector).after((i) => videoIcon(playerNames[i], videoIconUrl));
+insertVideoIcons = (selector, playerNames) => {
+	$(selector).after((i) => videoIcon(playerNames[i]));
 	$(".fl-video-icon").click(handleClick);
 };
