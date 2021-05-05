@@ -1,4 +1,4 @@
-function yahoo() {
+function yahoo(options) {
 	const [, , leagueId, endPoint, subEndPoint] = pathname.split("/", 5);
 	const isTeam = !isNaN(endPoint) && (!subEndPoint || subEndPoint === "team");
 	const endPoints = [
@@ -21,7 +21,7 @@ function yahoo() {
 	];
 	let playerNames = [];
 
-	removeHlCol = () =>
+	formatTable = () =>
 		$("th.Ta-c").each(function () {
 			if ($(this).text() === "Highlight" || $(this).text() === "Forecast") {
 				$("thead .Ta-c:not(.pos,.edit)").replaceWith("<th></th>");
@@ -48,9 +48,10 @@ function yahoo() {
 
 	render = () => {
 		if (isTeam || endPoints.includes(endPoint)) {
-			if (isTeam || endPoint === "players") removeHlCol();
+			if (options.formatTable && (isTeam || endPoint === "players"))
+				formatTable();
 			populatePlayerNames(".name");
-			insertVideoIcons(".playernote:not(.small)", playerNames, videoIconUrl);
+			insertVideoIcons(".playernote:not(.small)", playerNames);
 		}
 	};
 
