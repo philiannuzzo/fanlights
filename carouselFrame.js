@@ -87,7 +87,6 @@ populateCarousel = (request) => {
 	chrome.runtime.sendMessage({ greeting: "isPopulated" });
 };
 
-chrome.runtime.onMessage.addListener(
-	(request, _sender, _sendResponse) =>
-		request.greeting === "populateCarousel" && populateCarousel(request)
-);
+chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
+	if (request.greeting === "populateCarousel") populateCarousel(request);
+});

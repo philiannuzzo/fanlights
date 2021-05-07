@@ -1,4 +1,4 @@
-function yahoo(options) {
+function yahoo() {
 	const [, , leagueId, endPoint, subEndPoint] = pathname.split("/", 5);
 	const isTeam = !isNaN(endPoint) && (!subEndPoint || subEndPoint === "team");
 	const endPoints = [
@@ -19,43 +19,38 @@ function yahoo(options) {
 		"playermatchups",
 		"draftanalysis",
 	];
-	let playerNames = [];
 
-	formatTable = () =>
-		$("th.Ta-c").each(function () {
-			if ($(this).text() === "Highlight" || $(this).text() === "Forecast") {
-				$("thead .Ta-c:not(.pos,.edit)").replaceWith("<th></th>");
-				$("tbody .Ta-c:not(.pos,.edit)").replaceWith("<td></td>");
-				return;
-			}
-		});
+	// formatTable = () =>
+	// 	$("th.Ta-c").each(function () {
+	// 		if ($(this).text() === "Highlight" || $(this).text() === "Forecast") {
+	// 			$("thead .Ta-c:not(.pos,.edit)").replaceWith("<th></th>");
+	// 			$("tbody .Ta-c:not(.pos,.edit)").replaceWith("<td></td>");
+	// 			return;
+	// 		}
+	// 	});
 
-	populatePlayerNames = (selector) =>
+	playerNames = (selector) => {
+		let formatted = [];
 		$(selector).each(function () {
-			playerNames.push(formatName($(this).text()));
+			formatted.push(formatName($(this).text()));
 		});
+		return formatted;
+	};
 
 	initMutationObserver = () => {
 		const targetNode = document
-			.getElementsByClassName("fl-video-icon")[0]
+			.getElementsByClassName("playernote")[0]
 			.closest("section");
-		const observer = new MutationObserver(() => {
-			playerNames = [];
-			render();
-		});
+		const observer = new MutationObserver(() => render());
 		observer.observe(targetNode, { childList: true });
 	};
 
 	render = () => {
-		if (isTeam || endPoints.includes(endPoint)) {
-			if (options.formatTable && (isTeam || endPoint === "players"))
-				formatTable();
-			populatePlayerNames(".name");
-			insertVideoIcons(".playernote:not(.small)", playerNames);
-		}
+		const names = playerNames(".name");
+		insertVideoIcons(".playernote:not(.small)", names);
 	};
 
-	render();
+	if (isTeam || endPoints.includes(endPoint)) render();
 	insertCarousel();
 	return (isTeam || endPoint === "players") && initMutationObserver();
 }

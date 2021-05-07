@@ -19,16 +19,15 @@ toggleCarousel = () => {
 	else enterCarousel();
 };
 
-insertCarousel = async () => {
-	await $.get(chrome.runtime.getURL("carousel.html"), (data) =>
-		$(data).appendTo("body")
-	);
-	$("#fanlights").attr("src", videoTabUrl);
-	$("#videoTab").click(toggleCarousel);
-	$("#carouselFrame").attr("src", carouselFrameUrl);
+insertCarousel = () => {
+	$.get(chrome.runtime.getURL("carousel.html"), (data) => {
+		$(data).appendTo("body");
+		$("#fanlights").attr("src", videoTabUrl);
+		$("#videoTab").click(toggleCarousel);
+		$("#carouselFrame").attr("src", carouselFrameUrl);
+	});
 };
 
-chrome.runtime.onMessage.addListener(
-	(request, _sender, _sendResponse) =>
-		request.greeting === "enterCarousel" && enterCarousel()
-);
+chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
+	if (request.greeting === "enterCarousel") enterCarousel();
+});
