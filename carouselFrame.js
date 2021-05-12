@@ -1,5 +1,6 @@
 var page = 0;
 var activeId;
+var thumbLoad = 0;
 
 getThumbPath = (i) => `docs[${i + page * 3}].image.cuts[0].src`;
 getTitlePath = (i) => `docs[${i + page * 3}].title`;
@@ -78,13 +79,24 @@ hydrate = (request) => {
 		});
 };
 
+resetThumbLoad = () => {
+	thumbLoad = 0;
+	$("img.thumb").off("load");
+	chrome.runtime.sendMessage({ greeting: "isPopulated" });
+};
+
+handleThumbLoad = () => {
+	thumbLoad++;
+	return thumbLoad === 3 && resetThumbLoad();
+};
+
 populateCarousel = (request) => {
 	page = 0;
 	hydrate(request);
+	$("img.thumb").on("load", handleThumbLoad);
 	$("#initialContainer").css("display", "none");
 	$("#carouselContainer").css("display", "block");
 	reset();
-	chrome.runtime.sendMessage({ greeting: "isPopulated" });
 };
 
 chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {

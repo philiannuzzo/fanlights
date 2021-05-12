@@ -46,17 +46,16 @@ initiateCarousel = async (playerName, tabId) => {
 		if (!search.ok) throw new Error("Search status " + search.status);
 		const { docs } = await search.json();
 
-		tabs.sendMessage(tabId, { greeting: "populateCarousel", docs });
-
 		playHighlight(docs[0].url);
+		tabs.sendMessage(tabId, { greeting: "populateCarousel", docs });
 	} catch (error) {
 		console.error(error);
 	}
 };
 
-runtime.onInstalled.addListener(
-	({ reason }) => reason === "install" && tabs.create({ url: "options.html" })
-);
+runtime.onInstalled.addListener((details) => {
+	if (details.reason === "install") tabs.create({ url: "options.html" });
+});
 
 runtime.onMessage.addListener(
 	({ greeting, url, playerName, left, top }, sender) => {

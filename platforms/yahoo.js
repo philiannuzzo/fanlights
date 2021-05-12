@@ -1,4 +1,4 @@
-function yahoo() {
+yahoo = () => {
 	const [, , leagueId, endPoint, subEndPoint] = pathname.split("/", 5);
 	const isTeam = !isNaN(endPoint) && (!subEndPoint || subEndPoint === "team");
 	const endPoints = [
@@ -7,12 +7,12 @@ function yahoo() {
 		"playernotes",
 		// "matchup",
 		// "positioneligibility",
+		// "buzzindex",
 		"injuries",
 		"cantcutlist",
 		"playerchanges",
 		"statcorrections",
 		"research",
-		"buzzindex",
 		"whoshot",
 		"keystosuccess",
 		"assistantmanager",
@@ -20,20 +20,9 @@ function yahoo() {
 		"draftanalysis",
 	];
 
-	// formatTable = () =>
-	// 	$("th.Ta-c").each(function () {
-	// 		if ($(this).text() === "Highlight" || $(this).text() === "Forecast") {
-	// 			$("thead .Ta-c:not(.pos,.edit)").replaceWith("<th></th>");
-	// 			$("tbody .Ta-c:not(.pos,.edit)").replaceWith("<td></td>");
-	// 			return;
-	// 		}
-	// 	});
-
 	playerNames = (selector) => {
 		let formatted = [];
-		$(selector).each(function () {
-			formatted.push(formatName($(this).text()));
-		});
+		$(selector).each((_i, e) => formatted.push(formatName(e.innerText)));
 		return formatted;
 	};
 
@@ -41,7 +30,7 @@ function yahoo() {
 		const targetNode = document
 			.getElementsByClassName("playernote")[0]
 			.closest("section");
-		const observer = new MutationObserver(() => render());
+		const observer = new MutationObserver(render);
 		observer.observe(targetNode, { childList: true });
 	};
 
@@ -50,7 +39,9 @@ function yahoo() {
 		insertVideoIcons(".playernote:not(.small)", names);
 	};
 
-	if (isTeam || endPoints.includes(endPoint)) render();
-	insertCarousel();
-	return (isTeam || endPoint === "players") && initMutationObserver();
-}
+	if (isTeam || endPoints.includes(endPoint)) {
+		render();
+		insertCarousel();
+		return (isTeam || endPoint === "players") && initMutationObserver();
+	}
+};
