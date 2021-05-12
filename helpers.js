@@ -16,6 +16,7 @@ formatName = (name) => {
 		{ re: /[\xD1]/g, ch: "N" },
 		{ re: /[\xF1]/g, ch: "n" },
 	];
+	name = name.split(" (")[0]; // (Batter / Pitcher)
 	for (var i = 0, len = rExps.length; i < len; i++)
 		name = name.replace(rExps[i].re, rExps[i].ch);
 	return escape(name);
