@@ -12,16 +12,11 @@ switch (hostname) {
 		break;
 	case "mlb-cuts-diamond.mlb.com":
 	case "bdata-producedclips.mlb.com":
-		$(() => chrome.runtime.sendMessage({ greeting: "popupReady" }));
-		addEventListener("beforeunload", () =>
-			chrome.runtime.sendMessage({
-				greeting: "popupRemoved",
-				left: screenLeft,
-				top: screenTop,
-			})
-		);
-		chrome.runtime.onMessage.addListener(({ greeting, url }) => {
-			if (greeting === "updatePopup" && document.location.href !== url)
-				document.location.href = url;
+		$(() => {
+			chrome.runtime.sendMessage({ greeting: "popupReady" });
+			chrome.runtime.onMessage.addListener(({ greeting, url }) => {
+				if (greeting === "updatePopup" && document.location.href !== url)
+					document.location.href = url;
+			});
 		});
 }

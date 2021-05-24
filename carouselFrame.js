@@ -2,33 +2,34 @@ var page = 0;
 var activeId;
 var thumbLoad = 0;
 
-getThumbPath = (i) => `docs[${i + page * 3}].image.cuts[0].src`;
-getTitlePath = (i) => `docs[${i + page * 3}].title`;
-getUrlPath = (i) => `docs[${i + page * 3}].url`;
-getIdPath = (i) => `docs[${i + page * 3}].id`;
-getTimePath = (i) => `docs[${i + page * 3}].date`;
-getDurationPath = (i) => `docs[${i + page * 3}].duration`;
+thumbPath = (i) => `docs[${i + page * 3}].image.cuts[0].src`;
+titlePath = (i) => `docs[${i + page * 3}].title`;
+urlPath = (i) => `docs[${i + page * 3}].url`;
+idPath = (i) => `docs[${i + page * 3}].id`;
+timePath = (i) => `docs[${i + page * 3}].date`;
+durationPath = (i) => `docs[${i + page * 3}].duration`;
 
-formatTime = (timestamp) => {
+function formatTime(timestamp) {
 	const date = timestamp.split("T")[0];
 	let today = new Date();
 	today = today.toISOString().split("T")[0];
 	const formatted = timestamp.split(".")[0].replace("T", " "); // YYYY-MM-DD hh:mm:ss
-	return date === today
-		? "<span class='new'>NEW</span> " + formatted
-		: formatted;
-};
+	if (date === today) return "<span class='new'>NEW</span> " + formatted;
+	return formatted;
+}
 
-formatTitle = (title) => title.substring(0, 55);
+function formatTitle(title) {
+	return title.substring(0, 55);
+}
 
-handleClick = (url, id) => {
+function handleClick(url, id) {
 	chrome.runtime.sendMessage({ greeting: "playHighlight", url });
 	$(".active").removeClass("active");
 	$("#" + id).addClass("active");
 	activeId = id;
-};
+}
 
-reset = () => {
+function reset() {
 	$(".newer").attr("disabled", true);
 	$(".older").attr("disabled", false);
 	$(".thumb")
@@ -38,16 +39,18 @@ reset = () => {
 			activeId = this.id;
 			return "active";
 		});
-};
+	$("#initialContainer").css("display", "none");
+	$("#carouselContainer").css("display", "block");
+}
 
-hydrate = (request) => {
+function hydrate(request) {
 	$(".thumb")
-		.attr("src", (i) => _.get(request, getThumbPath(i)))
-		.attr("id", (i) => _.get(request, getIdPath(i)))
+		.attr("src", (i) => _.get(request, thumbPath(i)))
+		.attr("id", (i) => _.get(request, idPath(i)))
 		.each(function (i) {
 			$(this)
 				.off("click")
-				.click(() => handleClick(_.get(request, getUrlPath(i)), this.id));
+				.click(() => handleClick(_.get(request, urlPath(i)), this.id));
 			activeId === this.id
 				? $(this).addClass("active")
 				: $(this).removeClass("active");
@@ -56,11 +59,11 @@ hydrate = (request) => {
 		$(this)
 			.off("click")
 			.click(() =>
-				handleClick(_.get(request, getUrlPath(i)), _.get(request, getIdPath(i)))
+				handleClick(_.get(request, urlPath(i)), _.get(request, idPath(i)))
 			);
 	});
-	$(".title").html((i) => formatTitle(_.get(request, getTitlePath(i))));
-	$(".time").html((i) => formatTime(_.get(request, getTimePath(i))));
+	$(".title").html((i) => formatTitle(_.get(request, titlePath(i))));
+	$(".time").html((i) => formatTime(_.get(request, timePath(i))));
 	$(".newer")
 		.off("click")
 		.click(function () {
@@ -77,27 +80,25 @@ hydrate = (request) => {
 			if (page === 2) $(this).attr("disabled", true);
 			hydrate(request);
 		});
-};
+}
 
-resetThumbLoad = () => {
+function resetThumbLoad() {
 	thumbLoad = 0;
 	$("img.thumb").off("load");
 	chrome.runtime.sendMessage({ greeting: "isPopulated" });
-};
+}
 
-handleThumbLoad = () => {
+function handleThumbLoad() {
 	thumbLoad++;
-	return thumbLoad === 3 && resetThumbLoad();
-};
+	if (thumbLoad === 3) resetThumbLoad();
+}
 
-populateCarousel = (request) => {
+function populateCarousel(request) {
 	page = 0;
-	hydrate(request);
 	$("img.thumb").on("load", handleThumbLoad);
-	$("#initialContainer").css("display", "none");
-	$("#carouselContainer").css("display", "block");
+	hydrate(request);
 	reset();
-};
+}
 
 chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
 	if (request.greeting === "populateCarousel") populateCarousel(request);

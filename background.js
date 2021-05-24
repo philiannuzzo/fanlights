@@ -4,39 +4,41 @@ const lookupBase = "https://typeahead.mlb.com/api/v1/typeahead/suggestions/";
 const searchBase =
 	"https://www.mlb.com/data-service/en/search?tags.slug=playerid-";
 
-let leftDefault = screen.width / 2 - 620;
-let topDefault = screen.height / 2 - 363;
-let popupId;
-let popupTabId;
+let popupId, popupTabId;
 
-popupData = (url, left = leftDefault, top = topDefault) => ({
+popupData = (url) => ({
 	url,
 	type: "popup",
-	height: 726,
 	width: 1240,
-	left,
-	top,
+	height: 726,
+	left: screen.width / 2 - 620,
+	top: screen.height / 2 - 363,
 });
 
-createPopup = (url, left, top) =>
-	windows.create(popupData(url, left, top), (popup) => {
-		popupId = popup.id;
-		windows.update(popupId, { left, top }); // firefox bug 1271047
-	});
+function sendMessageWrapper(tabId, greeting, payload) {
+	console.log(...arguments);
+	tabs.sendMessage(tabId, { greeting, ...payload });
+}
 
-updatePopup = (popupId, url) =>
+function createPopup(url) {
+	windows.create(popupData(url), (popup) => (popupId = popup.id));
+}
+
+function updatePopup(popupId, url) {
 	windows.update(popupId, { focused: true }, () => {
-		if (runtime.lastError) return createPopup(url, leftDefault, topDefault);
-		tabs.sendMessage(popupTabId, { greeting: "updatePopup", url });
+		if (runtime.lastError) return createPopup(url);
+		sendMessageWrapper(popupTabId, "updatePopup", { url });
 	});
+}
 
-playHighlight = (url) =>
+function playHighlight(url) {
 	storage.sync.get(null, ({ highBitrate }) => {
 		if (highBitrate) url = url.replace("4000K", "16000K");
 		popupId ? updatePopup(popupId, url) : createPopup(url);
 	});
+}
 
-initiateCarousel = async (playerName, tabId) => {
+async function initiateCarousel(playerName, tabId) {
 	try {
 		const lookup = await fetch(lookupBase + playerName);
 		if (!lookup.ok) throw new Error("Lookup status " + lookup.status);
@@ -47,39 +49,33 @@ initiateCarousel = async (playerName, tabId) => {
 		const { docs } = await search.json();
 
 		playHighlight(docs[0].url);
-		tabs.sendMessage(tabId, { greeting: "populateCarousel", docs });
+		sendMessageWrapper(tabId, "populateCarousel", { docs });
 	} catch (error) {
-		console.error(error);
+		sendMessageWrapper(tabId, "statusError", { errorMessage: error.message });
 	}
-};
+}
 
 runtime.onInstalled.addListener((details) => {
 	if (details.reason === "install") tabs.create({ url: "options.html" });
 });
 
-runtime.onMessage.addListener(
-	({ greeting, url, playerName, left, top }, sender) => {
-		const tabId = sender.tab.id;
+runtime.onMessage.addListener(({ greeting, url, playerName }, sender) => {
+	const tabId = sender.tab.id;
 
-		switch (greeting) {
-			case "showPageIcon":
-				pageAction.show(tabId);
-				break;
-			case "playHighlight":
-				playHighlight(url);
-				break;
-			case "initiateCarousel":
-				initiateCarousel(playerName, tabId);
-				break;
-			case "isPopulated":
-				tabs.sendMessage(tabId, { greeting: "enterCarousel" });
-				break;
-			case "popupReady":
-				popupTabId = tabId;
-				break;
-			case "popupRemoved":
-				leftDefault = left;
-				topDefault = top;
-		}
+	switch (greeting) {
+		case "showPageIcon":
+			pageAction.show(tabId);
+			break;
+		case "playHighlight":
+			playHighlight(url);
+			break;
+		case "initiateCarousel":
+			initiateCarousel(playerName, tabId);
+			break;
+		case "isPopulated":
+			sendMessageWrapper(tabId, "enterCarousel");
+			break;
+		case "popupReady":
+			popupTabId = tabId;
 	}
-);
+});

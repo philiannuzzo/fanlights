@@ -1,7 +1,7 @@
 videoIcon = (id) =>
-	` <img class="fl-video-icon" id=${id} src=${videoIconUrl} />`;
+	` <img class="fl-video-icon" id="${id}" src="${videoIconUrl}" />`;
 
-formatName = (name) => {
+function formatName(name) {
 	var rExps = [
 		{ re: /[\xC0-\xC6]/g, ch: "A" },
 		{ re: /[\xE0-\xE6]/g, ch: "a" },
@@ -16,22 +16,22 @@ formatName = (name) => {
 		{ re: /[\xD1]/g, ch: "N" },
 		{ re: /[\xF1]/g, ch: "n" },
 	];
-	name = name.split(" (")[0]; // (Batter / Pitcher)
+	name = name.split(" (")[0]; // e.g. 'Shohei Ohtani (Batter)
 	for (var i = 0, len = rExps.length; i < len; i++)
 		name = name.replace(rExps[i].re, rExps[i].ch);
 	return escape(name);
-};
+}
 
-handleClick = (e) => {
+function handleClick(e) {
 	e.stopPropagation();
 	if (getAnimationName() === "enterCarousel") exitCarousel();
 	chrome.runtime.sendMessage({
 		greeting: "initiateCarousel",
 		playerName: e.target.id,
 	});
-};
+}
 
-insertVideoIcons = (selector, playerNames) => {
-	$(selector).after((i) => videoIcon(playerNames[i]));
+function insertVideoIcons(selector, nameIds) {
+	$(selector).after((i) => videoIcon(nameIds[i]));
 	$(".fl-video-icon").click(handleClick);
-};
+}

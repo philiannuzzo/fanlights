@@ -1,4 +1,4 @@
-yahoo = () => {
+function yahoo() {
 	const [, , leagueId, endPoint, subEndPoint] = pathname.split("/", 5);
 	const isTeam = !isNaN(endPoint) && (!subEndPoint || subEndPoint === "team");
 	const endPoints = [
@@ -22,7 +22,9 @@ yahoo = () => {
 
 	playerNames = (selector) => {
 		let formatted = [];
-		$(selector).each((_i, e) => formatted.push(formatName(e.innerText)));
+		$(selector).each(
+			(_i, { innerText }) => innerText && formatted.push(formatName(innerText))
+		);
 		return formatted;
 	};
 
@@ -34,14 +36,12 @@ yahoo = () => {
 		observer.observe(targetNode, { childList: true });
 	};
 
-	render = () => {
-		const names = playerNames(".name");
-		insertVideoIcons(".playernote:not(.small)", names);
-	};
+	render = () =>
+		insertVideoIcons(".playernote:not(.small)", playerNames(".name"));
 
 	if (isTeam || endPoints.includes(endPoint)) {
 		render();
 		insertCarousel();
-		return (isTeam || endPoint === "players") && initMutationObserver();
+		if (isTeam || endPoint === "players") initMutationObserver();
 	}
-};
+}
