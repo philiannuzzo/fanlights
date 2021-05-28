@@ -1,24 +1,6 @@
 function yahoo() {
-	const [, , leagueId, endPoint, subEndPoint] = pathname.split("/", 5);
-	const isTeam = !isNaN(endPoint) && (!subEndPoint || subEndPoint === "team");
-	const endPoints = [
-		"players",
-		"startingrosters",
-		"playernotes",
-		// "matchup",
-		// "positioneligibility",
-		// "buzzindex",
-		"injuries",
-		"cantcutlist",
-		"playerchanges",
-		"statcorrections",
-		"research",
-		"whoshot",
-		"keystosuccess",
-		"assistantmanager",
-		"playermatchups",
-		"draftanalysis",
-	];
+	const [, , leagueId, endPoint] = pathname.split("/", 4);
+	const teamId = !isNaN(endPoint) ? endPoint : null;
 
 	playerNames = (selector) => {
 		let formatted = [];
@@ -28,20 +10,63 @@ function yahoo() {
 		return formatted;
 	};
 
-	initMutationObserver = () => {
-		const targetNode = document
-			.getElementsByClassName("playernote")[0]
-			.closest("section");
-		const observer = new MutationObserver(render);
-		observer.observe(targetNode, { childList: true });
+	initMutationObserver = (targetNode, callback = renderDefault) => {
+		if (targetNode) {
+			const observer = new MutationObserver(callback);
+			observer.observe(targetNode, { childList: true });
+		}
 	};
 
-	render = () =>
-		insertVideoIcons(".playernote:not(.small)", playerNames(".name"));
+	renderDefault = () => {
+		insertVideoIconsAfter(".playernote:not(.small)", playerNames(".name"));
+	};
 
-	if (isTeam || endPoints.includes(endPoint)) {
-		render();
-		insertCarousel();
-		if (isTeam || endPoint === "players") initMutationObserver();
+	renderTxTable = () => {
+		insertVideoIconsAfter(".playernote:not(.small)", playerNames("#transactions .Pbot-xs a"));
+	};
+
+	switch (pathname) {
+		case `/b1/${leagueId}/${teamId}/team`:
+		case `/b1/${leagueId}/${teamId}`:
+			renderDefault();
+			initMutationObserver($("section.ysf-rosterswap-manager")[0]);
+			break;
+		case `/b1/${leagueId}/${teamId}/playerswatch`:
+			renderDefault();
+			initMutationObserver($("#playerswatchform div")[0]);
+			break;
+		case `/b1/${leagueId}/players`:
+			renderDefault();
+			initMutationObserver($("#players-table-wrapper")[0]);
+			break;
+		case `/b1/${leagueId}/transactions`:
+		case `/b1/${leagueId}`:
+			renderTxTable();
+			initMutationObserver($("#transactions div")[1], renderTxTable);
+			break;
+		case `/b1/${leagueId}/${teamId}/dropplayer`:
+		case `/b1/${leagueId}/${teamId}/proposetrade`:
+		case `/b1/${leagueId}/${teamId}/viewwaiver`:
+		case `/b1/${leagueId}/positioneligibility`:
+		case `/b1/${leagueId}/buzzindex`:
+		case `/b1/${leagueId}/playermatchups`:
+		case `/b1/${leagueId}/matchup`:
+		case `/b1`:
+			// if (document.getElementById("redzone")) {
+			// 	const matchupReady = setInterval(() => {
+			// 		if (document.getElementById("matchup")) {
+			// 			renderDefault();
+			// 			initMutationObserver($("#redzone div div div")[0]);
+			// 			clearInterval(matchupReady);
+			// 		}
+			// 	}, 100);
+			// } else renderDefault();
+			// break;
+
+			return;
+		default:
+			renderDefault();
 	}
+
+	insertCarousel();
 }

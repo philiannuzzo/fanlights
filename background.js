@@ -1,8 +1,7 @@
 const { runtime, tabs, pageAction, storage, windows } = chrome;
 
 const lookupBase = "https://typeahead.mlb.com/api/v1/typeahead/suggestions/";
-const searchBase =
-	"https://www.mlb.com/data-service/en/search?tags.slug=playerid-";
+const searchBase = "https://www.mlb.com/data-service/en/search?tags.slug=playerid-";
 
 let popupId, popupTabId;
 
@@ -16,7 +15,6 @@ popupData = (url) => ({
 });
 
 function sendMessageWrapper(tabId, greeting, payload) {
-	console.log(...arguments);
 	tabs.sendMessage(tabId, { greeting, ...payload });
 }
 
@@ -44,6 +42,8 @@ async function initiateCarousel(playerName, tabId) {
 		if (!lookup.ok) throw new Error("Lookup status " + lookup.status);
 		const { players } = await lookup.json();
 
+		if (!players.length) throw new Error("Player lookup failed");
+
 		const search = await fetch(searchBase + players[0].playerId);
 		if (!search.ok) throw new Error("Search status " + search.status);
 		const { docs } = await search.json();
@@ -62,20 +62,9 @@ runtime.onInstalled.addListener((details) => {
 runtime.onMessage.addListener(({ greeting, url, playerName }, sender) => {
 	const tabId = sender.tab.id;
 
-	switch (greeting) {
-		case "showPageIcon":
-			pageAction.show(tabId);
-			break;
-		case "playHighlight":
-			playHighlight(url);
-			break;
-		case "initiateCarousel":
-			initiateCarousel(playerName, tabId);
-			break;
-		case "isPopulated":
-			sendMessageWrapper(tabId, "enterCarousel");
-			break;
-		case "popupReady":
-			popupTabId = tabId;
-	}
+	if (greeting === "showPageIcon") pageAction.show(tabId);
+	else if (greeting === "playHighlight") playHighlight(url);
+	else if (greeting === "initiateCarousel") initiateCarousel(playerName, tabId);
+	else if (greeting === "isPopulated") sendMessageWrapper(tabId, "enterCarousel");
+	else if (greeting === "popupReady") popupTabId = tabId;
 });

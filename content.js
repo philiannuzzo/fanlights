@@ -1,4 +1,4 @@
-const { hostname, pathname } = document.location;
+const { hostname, pathname, href } = document.location;
 
 const carouselFrameUrl = chrome.runtime.getURL("carouselFrame.html");
 const videoTabUrl = chrome.runtime.getURL("/icons/icon-19.png");
@@ -13,10 +13,9 @@ switch (hostname) {
 	case "mlb-cuts-diamond.mlb.com":
 	case "bdata-producedclips.mlb.com":
 		$(() => {
-			chrome.runtime.sendMessage({ greeting: "popupReady" });
 			chrome.runtime.onMessage.addListener(({ greeting, url }) => {
-				if (greeting === "updatePopup" && document.location.href !== url)
-					document.location.href = url;
+				if (greeting === "updatePopup" && href !== url) document.location.href = url;
 			});
+			chrome.runtime.sendMessage({ greeting: "popupReady" });
 		});
 }
