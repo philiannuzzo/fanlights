@@ -2,7 +2,7 @@ function yahoo() {
 	const [, , leagueId, endPoint] = pathname.split("/", 4);
 	const teamId = !isNaN(endPoint) ? endPoint : null;
 
-	playerNames = (selector) => {
+	nameIds = (selector) => {
 		let formatted = [];
 		$(selector).each(
 			(_i, { innerText }) => innerText && formatted.push(formatName(innerText))
@@ -18,22 +18,19 @@ function yahoo() {
 	};
 
 	renderDefault = () => {
-		insertVideoIconsAfter(".playernote:not(.small)", playerNames(".name"));
+		insertVideoIconsAfter(".playernote:not(.small)", nameIds(".name"));
 	};
 
 	renderTxTable = () => {
-		insertVideoIconsAfter(".playernote:not(.small)", playerNames("#transactions .Pbot-xs a"));
+		insertVideoIconsAfter(".playernote:not(.small)", nameIds("#transactions .Pbot-xs a"));
 	};
 
 	switch (pathname) {
+		case `/b1/${leagueId}/${teamId}/playerswatch`:
 		case `/b1/${leagueId}/${teamId}/team`:
 		case `/b1/${leagueId}/${teamId}`:
 			renderDefault();
-			initMutationObserver($("section.ysf-rosterswap-manager")[0]);
-			break;
-		case `/b1/${leagueId}/${teamId}/playerswatch`:
-			renderDefault();
-			initMutationObserver($("#playerswatchform div")[0]);
+			initMutationObserver($(".stat-target")[0]);
 			break;
 		case `/b1/${leagueId}/players`:
 			renderDefault();
@@ -47,6 +44,7 @@ function yahoo() {
 		case `/b1/${leagueId}/${teamId}/dropplayer`:
 		case `/b1/${leagueId}/${teamId}/proposetrade`:
 		case `/b1/${leagueId}/${teamId}/viewwaiver`:
+		case `/b1/${leagueId}/addplayer`:
 		case `/b1/${leagueId}/positioneligibility`:
 		case `/b1/${leagueId}/buzzindex`:
 		case `/b1/${leagueId}/playermatchups`:

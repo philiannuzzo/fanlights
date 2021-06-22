@@ -2,10 +2,6 @@ function getAnimationName() {
 	return $("#carousel").css("animation-name");
 }
 
-function handleStatusError({ greeting, errorMessage }) {
-	if (greeting === "statusError") console.error("[fanlights.io]", errorMessage);
-}
-
 function exitCarousel() {
 	$("#carousel").css({
 		"animation-name": "exitCarousel",
@@ -27,16 +23,16 @@ function toggleCarousel() {
 	else enterCarousel();
 }
 
-function insertCarousel() {
-	$.get(chrome.runtime.getURL("carousel.html"), (data) => {
-		$(data).appendTo("body");
-		$("#fanlights").attr("src", videoTabUrl);
-		$("#videoTab").click(toggleCarousel);
-		$("#carouselFrame").attr("src", carouselFrameUrl);
-		chrome.runtime.onMessage.addListener(handleStatusError);
-	});
+async function insertCarousel() {
+	const response = await fetch(chrome.runtime.getURL("carousel.html"));
+	const carousel = await response.text();
+	$(carousel).appendTo("body");
+	$("#fanlights").attr("src", videoTabUrl);
+	$("#videoTab").click(toggleCarousel);
+	$("#carouselFrame").attr("src", carouselFrameUrl);
 }
 
-chrome.runtime.onMessage.addListener((request, _sender, _sendResponse) => {
-	if (request.greeting === "enterCarousel") enterCarousel();
+chrome.runtime.onMessage.addListener(({ greeting, errorMessage }) => {
+	if (greeting === "enterCarousel") enterCarousel();
+	else if (greeting === "logError") console.error("[fanlights.io]", errorMessage);
 });

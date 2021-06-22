@@ -30,6 +30,11 @@ body {
 
 .thumb-container {
 	margin-right: 10px;
+	cursor: pointer;
+}
+
+.thumb-container:hover + .title-container {
+	background: #555;
 }
 
 .title-container {
@@ -42,7 +47,6 @@ body {
 }
 
 .thumb {
-	cursor: pointer;
 	max-width: 100%;
 }
 

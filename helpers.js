@@ -24,10 +24,7 @@ function formatName(name) {
 function handleClick(e) {
 	e.stopPropagation();
 	if (getAnimationName() === "enterCarousel") exitCarousel();
-	chrome.runtime.sendMessage({
-		greeting: "initiateCarousel",
-		playerName: e.target.id,
-	});
+	chrome.runtime.sendMessage({ greeting: "initiateCarousel", nameId: e.target.id });
 }
 
 function insertVideoIconsAfter(selector, ids) {
