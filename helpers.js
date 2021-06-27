@@ -23,7 +23,7 @@ function formatName(name) {
 
 function handleClick(e) {
 	e.stopPropagation();
-	if (getAnimationName() === "enterCarousel") exitCarousel();
+	if (carousel.style.animationName === "enterCarousel") exitCarousel();
 	chrome.runtime.sendMessage({ greeting: "initiateCarousel", nameId: e.target.id });
 }
 
