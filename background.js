@@ -10,10 +10,10 @@ let popupId, popupTabId;
 popupData = (url) => ({
 	url,
 	type: "popup",
-	width: 1240,
-	height: 726,
-	left: screen.width / 2 - 620,
-	top: screen.height / 2 - 363,
+	width: 1280,
+	height: 750,
+	left: screen.width / 2 - 640,
+	top: screen.height / 2 - 375, // firefox bug 1271047
 });
 
 function sendMessageWrapper(tabId, greeting, payload) {
@@ -37,6 +37,12 @@ function updatePopup(popupId, url) {
 	windows.update(popupId, { focused: true }, () => {
 		if (runtime.lastError) return createPopup(url);
 		sendMessageWrapper(popupTabId, "updatePopup", { url });
+	});
+}
+
+function formatPopup(tabId, heightOffset) {
+	windows.update(popupId, { width: 1280, height: 720 + heightOffset }, () => {
+		if (popupTabId !== tabId) popupTabId = tabId;
 	});
 }
 
@@ -71,12 +77,12 @@ runtime.onInstalled.addListener((details) => {
 	if (details.reason === "install") tabs.create({ url: "options.html" });
 });
 
-runtime.onMessage.addListener(({ greeting, url, nameId }, sender) => {
+runtime.onMessage.addListener(({ greeting, url, nameId, heightOffset }, sender) => {
 	const tabId = sender.tab.id;
 
 	if (greeting === "showPageIcon") pageAction.show(tabId);
 	else if (greeting === "playHighlight") playHighlight(url);
 	else if (greeting === "initiateCarousel") initiateCarousel(nameId, tabId);
-	else if (greeting === "isPopulated") sendMessageWrapper(tabId, "enterCarousel");
-	else if (greeting === "popupReady") popupTabId = tabId;
+	else if (greeting === "carouselReady") sendMessageWrapper(tabId, "enterCarousel");
+	else if (greeting === "popupReady") formatPopup(tabId, heightOffset);
 });

@@ -32,7 +32,7 @@ function handleThumbLoad() {
 	thumbLoad++;
 	if (thumbLoad === 3) {
 		thumbLoad = 0;
-		chrome.runtime.sendMessage({ greeting: "isPopulated" });
+		chrome.runtime.sendMessage({ greeting: "carouselReady" });
 	}
 }
 
