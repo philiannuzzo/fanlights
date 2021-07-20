@@ -1,5 +1,6 @@
 const { runtime, tabs, pageAction, storage, windows } = chrome;
 
+//
 storage.local.clear();
 
 const lookupBase = "https://typeahead.mlb.com/api/v1/typeahead/suggestions/";
@@ -33,14 +34,14 @@ function createPopup(url) {
 	windows.create(popupData(url), (popup) => (popupId = popup.id));
 }
 
-function updatePopup(popupId, url) {
+function updatePopup(url) {
 	windows.update(popupId, { focused: true }, () => {
 		if (runtime.lastError) return createPopup(url);
 		sendMessageWrapper(popupTabId, "updatePopup", { url });
 	});
 }
 
-function formatPopup(tabId, heightOffset) {
+function resetPopup(tabId, heightOffset) {
 	windows.update(popupId, { width: 1280, height: 720 + heightOffset }, () => {
 		if (popupTabId !== tabId) popupTabId = tabId;
 	});
@@ -49,7 +50,7 @@ function formatPopup(tabId, heightOffset) {
 function playHighlight(url) {
 	storage.sync.get(null, ({ highBitrate }) => {
 		if (highBitrate) url = url.replace("4000K", "16000K");
-		popupId ? updatePopup(popupId, url) : createPopup(url);
+		popupId ? updatePopup(url) : createPopup(url);
 	});
 }
 
@@ -58,9 +59,7 @@ async function initiateCarousel(nameId, tabId) {
 		const lookup = await fetchWrapper(lookupBase + nameId);
 		if (!lookup.ok) throw new Error("Lookup status " + lookup.status);
 		const { players } = await lookup.json();
-
 		if (!players.length) throw new Error("Player lookup failed");
-
 		const search = await fetchWrapper(searchBase + players[0].playerId);
 		if (!search.ok) throw new Error("Search status " + search.status);
 		const { docs } = await search.json();
@@ -84,5 +83,5 @@ runtime.onMessage.addListener(({ greeting, url, nameId, heightOffset }, sender) 
 	else if (greeting === "playHighlight") playHighlight(url);
 	else if (greeting === "initiateCarousel") initiateCarousel(nameId, tabId);
 	else if (greeting === "carouselReady") sendMessageWrapper(tabId, "enterCarousel");
-	else if (greeting === "popupReady") formatPopup(tabId, heightOffset);
+	else if (greeting === "popupReady") resetPopup(tabId, heightOffset);
 });
