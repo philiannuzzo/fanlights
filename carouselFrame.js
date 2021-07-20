@@ -8,6 +8,11 @@ idPath = (i) => `docs[${i + state.page * 3}].id`;
 timePath = (i) => `docs[${i + state.page * 3}].date`;
 durationPath = (i) => `docs[${i + state.page * 3}].duration`;
 
+function setState(newState) {
+	Object.assign(state, newState);
+	renderCarousel();
+}
+
 function formatTime(timestamp) {
 	const date = timestamp.split("T")[0];
 	let today = new Date();
@@ -23,9 +28,7 @@ function formatTitle(title) {
 
 function handleClick(url, id) {
 	chrome.runtime.sendMessage({ greeting: "playHighlight", url });
-	$(".active").removeClass("active");
-	$("#" + id).addClass("active");
-	state.activeId = id;
+	setState({ activeId: id });
 }
 
 function handleThumbLoad() {
@@ -59,25 +62,18 @@ function renderCarousel() {
 	if ($("#initialContainer").css("display") !== "none") {
 		$("#initialContainer").css("display", "none");
 		$("#carouselContainer").css("display", "block");
-		$(".newer").click(() => {
-			state.page--;
-			renderCarousel();
-		});
-		$(".older").click(() => {
-			state.page++;
-			renderCarousel();
-		});
+		$(".newer").click(() => setState({ page: state.page - 1 }));
+		$(".older").click(() => setState({ page: state.page + 1 }));
 	}
 }
 
 function populateCarousel(request) {
-	state = {
+	$(".thumb").one("load", handleThumbLoad);
+	setState({
 		request,
 		activeId: request.docs[0].id,
 		page: 0,
-	};
-	$(".thumb").one("load", handleThumbLoad);
-	renderCarousel();
+	});
 }
 
 chrome.runtime.onMessage.addListener((request) => {
@@ -89,8 +85,5 @@ window.addEventListener("beforeunload", () => {
 });
 
 chrome.storage.local.get("carouselState", ({ carouselState }) => {
-	if (carouselState) {
-		state = carouselState;
-		renderCarousel();
-	}
+	if (carouselState) setState(carouselState);
 });
