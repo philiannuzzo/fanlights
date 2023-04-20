@@ -22,7 +22,9 @@ function toggleCarousel() {
 async function insertCarousel() {
 	const response = await fetch(carouselUrl);
 	const text = await response.text();
-	$(text).appendTo("body");
+	const clean = DOMPurify.sanitize(text, { SAFE_FOR_JQUERY: true, ADD_TAGS: ["iframe"] });
+
+	$(clean).appendTo("body:first");
 	$("#fanlights").attr("src", videoTabUrl);
 	$("#videoTab").click(toggleCarousel);
 	$("#carouselFrame").attr("src", carouselFrameUrl);

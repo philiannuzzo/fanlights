@@ -1,4 +1,10 @@
-videoIcon = (id) => `<img class="fl-video-icon" id="${id}" src="${videoIconUrl}" />`;
+function videoIcon(id) {
+	const img = document.createElement("img");
+	img.className = "fl-video-icon";
+	img.id = id;
+	img.src = videoIconUrl;
+	return img;
+}
 
 function formatName(name) {
 	var rExps = [

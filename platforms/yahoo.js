@@ -34,7 +34,7 @@ function yahoo() {
 			break;
 		case `/b1/${leagueId}/players`:
 			renderDefault();
-			initMutationObserver($("#players-table-wrapper")[0]);
+			initMutationObserver($("#players-table-wrapper").get(0));
 			break;
 		case `/b1/${leagueId}/transactions`:
 		case `/b1/${leagueId}`:
@@ -67,4 +67,8 @@ function yahoo() {
 	}
 
 	insertCarousel();
+
+	$("#FantasyChatButton")
+		.css({ right: "", left: "20px" })
+		.click(() => $("#ChatList").css("left", "20px"));
 }
