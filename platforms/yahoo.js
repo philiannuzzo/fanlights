@@ -2,7 +2,7 @@ function yahoo() {
 	const [, , leagueId, endPoint] = pathname.split("/", 4);
 	const teamId = !isNaN(endPoint) ? endPoint : null;
 
-	nameIds = (selector) => {
+	const nameIds = (selector) => {
 		let formatted = [];
 		$(selector).each(
 			(_i, { innerText }) => innerText && formatted.push(formatName(innerText))
@@ -10,18 +10,18 @@ function yahoo() {
 		return formatted;
 	};
 
-	initMutationObserver = (targetNode, callback = renderDefault) => {
+	const initMutationObserver = (targetNode, callback = renderDefault) => {
 		if (targetNode) {
 			const observer = new MutationObserver(callback);
 			observer.observe(targetNode, { childList: true });
 		}
 	};
 
-	renderDefault = () => {
+	const renderDefault = () => {
 		insertVideoIconsAfter(".playernote:not(.small)", nameIds(".name"));
 	};
 
-	renderTxTable = () => {
+	const renderTxTable = () => {
 		insertVideoIconsAfter(".playernote:not(.small)", nameIds("#transactions .Pbot-xs a"));
 	};
 
@@ -34,7 +34,7 @@ function yahoo() {
 			break;
 		case `/b1/${leagueId}/players`:
 			renderDefault();
-			initMutationObserver($("#players-table-wrapper").get(0));
+			initMutationObserver($("#players-table-wrapper")[0]);
 			break;
 		case `/b1/${leagueId}/transactions`:
 		case `/b1/${leagueId}`:
@@ -50,25 +50,19 @@ function yahoo() {
 		case `/b1/${leagueId}/playermatchups`:
 		case `/b1/${leagueId}/matchup`:
 		case `/b1`:
-			// if (document.getElementById("redzone")) {
-			// 	const matchupReady = setInterval(() => {
-			// 		if (document.getElementById("matchup")) {
-			// 			renderDefault();
-			// 			initMutationObserver($("#redzone div div div")[0]);
-			// 			clearInterval(matchupReady);
-			// 		}
-			// 	}, 100);
-			// } else renderDefault();
-			// break;
-
 			return;
 		default:
 			renderDefault();
 	}
 
-	insertCarousel();
+	const fantasyChatButton = document.getElementById("FantasyChatButton");
+	fantasyChatButton.style.right = "";
+	fantasyChatButton.style.left = "20px";
+	fantasyChatButton.onclick = () =>
+		doWhenReady(
+			() => document.getElementsByClassName("ysf-chat-league").length,
+			() => (document.getElementById("ChatList").style.left = "20px")
+		);
 
-	$("#FantasyChatButton")
-		.css({ right: "", left: "20px" })
-		.click(() => $("#ChatList").css("left", "20px"));
+	insertCarousel();
 }

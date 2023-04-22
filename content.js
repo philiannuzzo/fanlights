@@ -13,6 +13,7 @@ switch (hostname) {
 		break;
 	case "mlb-cuts-diamond.mlb.com":
 	case "bdata-producedclips.mlb.com":
+	case "darkroom-clips.mlb.com":
 		$(() => {
 			chrome.runtime.onMessage.addListener(({ greeting, url }) => {
 				if (greeting === "updatePopup" && href !== url) document.location.href = url;

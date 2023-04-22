@@ -1,3 +1,13 @@
+function doWhenReady(condition, callback, interval = 50) {
+	if (condition()) return callback();
+	const readyCheck = setInterval(() => {
+		if (condition()) {
+			callback();
+			clearInterval(readyCheck);
+		}
+	}, interval);
+}
+
 function videoIcon(id) {
 	const img = document.createElement("img");
 	img.className = "fl-video-icon";
