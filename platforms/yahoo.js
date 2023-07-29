@@ -18,11 +18,17 @@ function yahoo() {
 	};
 
 	const renderDefault = () => {
-		insertVideoIconsAfter(".playernote:not(.small)", nameIds(".name"));
+		insertVideoIconsAfter(
+			"span.player-status a.playernote:not(.small)",
+			nameIds("a.name")
+		);
 	};
 
 	const renderTxTable = () => {
-		insertVideoIconsAfter(".playernote:not(.small)", nameIds("#transactions .Pbot-xs a"));
+		insertVideoIconsAfter(
+			"a.playernote:not(.small)",
+			nameIds("#transactions div.Pbot-xs a:first-child")
+		);
 	};
 
 	switch (pathname) {
