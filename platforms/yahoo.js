@@ -19,7 +19,7 @@ function yahoo() {
 
 	const renderDefault = () => {
 		insertVideoIconsAfter(
-			"span.player-status a.playernote:not(.small)",
+			"div.player-status a.playernote:not(.small)",
 			nameIds("a.name")
 		);
 	};
@@ -61,14 +61,14 @@ function yahoo() {
 			renderDefault();
 	}
 
-	const fantasyChatButton = document.getElementById("FantasyChatButton");
-	fantasyChatButton.style.right = "";
-	fantasyChatButton.style.left = "20px";
-	fantasyChatButton.onclick = () =>
-		doWhenReady(
-			() => document.getElementsByClassName("ysf-chat-league").length,
-			() => (document.getElementById("ChatList").style.left = "20px")
-		);
+	// const fantasyChatButton = document.getElementById("FantasyChatButton");
+	// fantasyChatButton.style.right = "";
+	// fantasyChatButton.style.left = "20px";
+	// fantasyChatButton.onclick = () =>
+	// 	doWhenReady(
+	// 		() => document.getElementsByClassName("ysf-chat-league").length,
+	// 		() => (document.getElementById("ChatList").style.left = "20px")
+	// 	);
 
 	insertCarousel();
 }
