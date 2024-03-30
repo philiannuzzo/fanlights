@@ -26,7 +26,7 @@ async function insertCarousel() {
 
 	$(clean).appendTo("body:first");
 	$("#fanlights").attr("src", videoTabUrl);
-	$("#videoTab").click(toggleCarousel);
+	$("#videoTab").on("click", toggleCarousel);
 	$("#carouselFrame").attr("src", carouselFrameUrl);
 
 	carousel = document.getElementById("carousel");

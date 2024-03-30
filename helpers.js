@@ -34,7 +34,7 @@ function formatName(name) {
 	name = name.split(" (")[0]; // e.g. 'Shohei Ohtani (Batter)
 	for (var i = 0, len = rExps.length; i < len; i++)
 		name = name.replace(rExps[i].re, rExps[i].ch);
-	return escape(name);
+	return encodeURI(name);
 }
 
 function handleClick(e) {
@@ -45,5 +45,5 @@ function handleClick(e) {
 
 function insertVideoIconsAfter(selector, ids) {
 	$(selector).after((i) => videoIcon(ids[i]));
-	$(".fl-video-icon").click(handleClick);
+	$(".fl-video-icon").on("click", handleClick);
 }
