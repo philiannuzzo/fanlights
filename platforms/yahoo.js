@@ -45,7 +45,7 @@ function yahoo() {
 		case `/b1/${leagueId}/transactions`:
 		case `/b1/${leagueId}`:
 			renderTxTable();
-			initMutationObserver($("#transactions div")[1], renderTxTable);
+			initMutationObserver($("#transactions div.Bd")[0], renderTxTable);
 			break;
 		case `/b1/${leagueId}/${teamId}/dropplayer`:
 		case `/b1/${leagueId}/${teamId}/proposetrade`:
