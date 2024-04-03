@@ -3,7 +3,7 @@ function yahoo() {
 	const teamId = !isNaN(endPoint) ? endPoint : null;
 
 	const nameIds = (selector) => {
-		let formatted = [];
+		const formatted = [];
 		$(selector).each(
 			(_i, { innerText }) => innerText && formatted.push(formatName(innerText))
 		);
@@ -25,10 +25,13 @@ function yahoo() {
 	};
 
 	const renderTxTable = () => {
-		insertVideoIconsAfter(
-			"a.playernote:not(.small)",
-			nameIds("#transactions div.Pbot-xs a:first-child")
-		);
+		const isFabOffersSelected =
+			document.querySelector("#transactions div.navlist .Selected").innerText ===
+			"FAB Offers";
+		const nameIdSelector = isFabOffersSelected
+			? "#transactions td:nth-child(2) > a:first-child"
+			: "#transactions td:nth-child(2) > div > a:first-child, #transactions td:nth-child(2) > p > a:first-child";
+		insertVideoIconsAfter("a.playernote:not(.small)", nameIds(nameIdSelector));
 	};
 
 	switch (pathname) {
