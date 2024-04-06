@@ -7,7 +7,7 @@
 	},
 	"name": "fanlights.io",
 	"description": "Adds the latest high-bitrate MLB video content to Yahoo Fantasy Baseball",
-	"version": "2.1.8",
+	"version": "2.1.9",
 	"options_ui": {
 		"page": "options.html"
 	},
@@ -34,6 +34,7 @@
 				"https://baseball.fantasysports.yahoo.com/b1/*",
 				"http://baseball.fantasysports.yahoo.com/b1/*",
 				"https://mlb-cuts-diamond.mlb.com/FORGE/*",
+				"https://milb-cuts-diamond.mlb.com/FORGE/*",
 				"https://bdata-producedclips.mlb.com/*",
 				"https://darkroom-clips.mlb.com/*"
 			],

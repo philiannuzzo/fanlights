@@ -12,6 +12,7 @@ switch (hostname) {
 		yahoo();
 		break;
 	case "mlb-cuts-diamond.mlb.com":
+	case "milb-cuts-diamond.mlb.com":
 	case "bdata-producedclips.mlb.com":
 	case "darkroom-clips.mlb.com":
 		$(() => {
