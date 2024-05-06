@@ -1,24 +1,20 @@
 {
-	"manifest_version": 2,
-
+	"manifest_version": 3,
 	"name": "fanlights.io",
 	"description": "Adds the latest high-bitrate MLB video content to Yahoo Fantasy Baseball",
-	"version": "3.0.01",
+	"version": "3.0.1",
 	"options_ui": {
 		"page": "options.html"
 	},
 	"web_accessible_resources": [
-		"options.html",
-		"carousel.html",
-		"carouselFrame.html",
-		"/icons/*"
+		{
+			"resources": ["options.html", "carousel.html", "carouselFrame.html", "/icons/*"],
+			"matches": ["*://baseball.fantasysports.yahoo.com/*"]
+		}
 	],
-	"permissions": ["storage"],
+	"permissions": ["storage", "system.display"],
 	"background": {
-		"page": "background.html"
-	},
-	"page_action": {
-		"default_icon": { "19": "/icons/icon-19.png" }
+		"service_worker": "serviceWorker.js"
 	},
 	"icons": {
 		"48": "/icons/icon-48.png",
@@ -27,8 +23,7 @@
 	"content_scripts": [
 		{
 			"matches": [
-				"https://baseball.fantasysports.yahoo.com/b1/*",
-				"http://baseball.fantasysports.yahoo.com/b1/*",
+				"*://baseball.fantasysports.yahoo.com/b1/*",
 				"https://mlb-cuts-diamond.mlb.com/FORGE/*",
 				"https://milb-cuts-diamond.mlb.com/FORGE/*",
 				"https://bdata-producedclips.mlb.com/*",
