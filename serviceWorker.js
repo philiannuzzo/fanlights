@@ -1,17 +1,20 @@
-const { runtime, tabs, storage, windows, system } = chrome;
+const { runtime, tabs, storage, windows } = chrome;
 
 const lookupBase = "https://typeahead.mlb.com/api/v1/typeahead/suggestions/";
 const searchBase = "https://www.mlb.com/data-service/en/search?tags.slug=playerid-";
 
 async function popupData(url) {
-	const displayInfo = await system.display.getInfo();
+	const { screenWidth, screenHeight } = await storage.local.get([
+		"screenWidth",
+		"screenHeight",
+	]);
 	return {
 		url,
 		type: "popup",
 		width: 1280,
 		height: 750,
-		left: displayInfo[0].bounds.width / 2 - 640,
-		top: displayInfo[0].bounds.height / 2 - 375, // firefox bug 1271047
+		left: screenWidth / 2 - 640,
+		top: screenHeight / 2 - 375, // firefox bug 1271047
 	};
 }
 

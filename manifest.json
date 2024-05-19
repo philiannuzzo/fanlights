@@ -12,10 +12,7 @@
 			"matches": ["*://baseball.fantasysports.yahoo.com/*"]
 		}
 	],
-	"permissions": ["storage", "system.display"],
-	"background": {
-		"service_worker": "serviceWorker.js"
-	},
+	"permissions": ["storage"],
 	"icons": {
 		"48": "/icons/icon-48.png",
 		"128": "/icons/icon-128.png"
@@ -39,5 +36,8 @@
 			],
 			"css": ["carousel.css"]
 		}
-	]
+	],
+	"background": {
+		"service_worker": "serviceWorker.js"
+	}
 }
