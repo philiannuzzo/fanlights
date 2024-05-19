@@ -1,21 +1,22 @@
-const { runtime, tabs, pageAction, storage, windows } = chrome;
-
-//
-storage.local.clear();
+const { runtime, tabs, storage, windows } = chrome;
 
 const lookupBase = "https://typeahead.mlb.com/api/v1/typeahead/suggestions/";
 const searchBase = "https://www.mlb.com/data-service/en/search?tags.slug=playerid-";
 
-let popupId, popupTabId;
-
-popupData = (url) => ({
-	url,
-	type: "popup",
-	width: 1280,
-	height: 750,
-	left: screen.width / 2 - 640,
-	top: screen.height / 2 - 375, // firefox bug 1271047
-});
+async function popupData(url) {
+	const { screenWidth, screenHeight } = await storage.local.get([
+		"screenWidth",
+		"screenHeight",
+	]);
+	return {
+		url,
+		type: "popup",
+		width: 1280,
+		height: 750,
+		left: screenWidth / 2 - 640,
+		top: screenHeight / 2 - 375, // firefox bug 1271047
+	};
+}
 
 function sendMessageWrapper(tabId, greeting, payload) {
 	tabs.sendMessage(tabId, { greeting, ...payload });
@@ -30,24 +31,28 @@ async function fetchWrapper(resource, options = {}) {
 	return response;
 }
 
-function createPopup(url) {
-	windows.create(popupData(url), (popup) => (popupId = popup.id));
+async function createPopup(url) {
+	const popupInfo = await popupData(url);
+	windows.create(popupInfo, (popup) => storage.local.set({ popupId: popup.id }));
 }
 
-function updatePopup(url) {
+async function updatePopup(url) {
+	const { popupId, popupTabId } = await storage.local.get(["popupId", "popupTabId"]);
 	windows.update(popupId, { focused: true }, () => {
 		if (runtime.lastError) return createPopup(url);
 		sendMessageWrapper(popupTabId, "updatePopup", { url });
 	});
 }
 
-function resetPopup(tabId, heightOffset) {
+async function resetPopup(tabId, heightOffset) {
+	const { popupId, popupTabId } = await storage.local.get(["popupId", "popupTabId"]);
 	windows.update(popupId, { width: 1280, height: 720 + heightOffset }, () => {
-		if (popupTabId !== tabId) popupTabId = tabId;
+		if (popupTabId !== tabId) storage.local.set({ popupTabId: tabId });
 	});
 }
 
-function playHighlight(url) {
+async function playHighlight(url) {
+	const { popupId } = await storage.local.get("popupId");
 	storage.sync.get(null, ({ highBitrate }) => {
 		if (highBitrate) url = url.replace("4000K", "16000K");
 		popupId ? updatePopup(url) : createPopup(url);
@@ -79,8 +84,7 @@ runtime.onInstalled.addListener((details) => {
 runtime.onMessage.addListener(({ greeting, url, nameId, heightOffset }, sender) => {
 	const tabId = sender.tab.id;
 
-	if (greeting === "showPageIcon") pageAction.show(tabId);
-	else if (greeting === "playHighlight") playHighlight(url);
+	if (greeting === "playHighlight") playHighlight(url);
 	else if (greeting === "initiateCarousel") initiateCarousel(nameId, tabId);
 	else if (greeting === "carouselReady") sendMessageWrapper(tabId, "enterCarousel");
 	else if (greeting === "popupReady") resetPopup(tabId, heightOffset);

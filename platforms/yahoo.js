@@ -53,6 +53,7 @@ function yahoo() {
 		case `/b1/${leagueId}/${teamId}/dropplayer`:
 		case `/b1/${leagueId}/${teamId}/proposetrade`:
 		case `/b1/${leagueId}/${teamId}/viewwaiver`:
+		case `/b1/${leagueId}/${teamId}/viewtrade`:
 		case `/b1/${leagueId}/addplayer`:
 		case `/b1/${leagueId}/positioneligibility`:
 		case `/b1/${leagueId}/buzzindex`:
