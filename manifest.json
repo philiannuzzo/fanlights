@@ -2,7 +2,7 @@
 	"manifest_version": 3,
 	"name": "fanlights.io-gecko",
 	"description": "Adds the latest high-bitrate MLB video content to Yahoo Fantasy Baseball",
-	"version": "3.0.1",
+	"version": "3.0.2",
 	"options_ui": {
 		"page": "options.html"
 	},

@@ -19,7 +19,7 @@ function yahoo() {
 
 	const renderDefault = () => {
 		insertVideoIconsAfter(
-			"div.player-status a.playernote:not(.small)",
+			"div.player-status a.playernote:not(.small):not(.yfa-video-forecast)",
 			nameIds("a.name")
 		);
 	};
